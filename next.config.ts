@@ -32,6 +32,25 @@ const nextConfig: NextConfig = {
       ],
     },
   ],
+  async redirects() {
+    return [
+      {
+        source: "/guides/777taz-game-apk-pakistan",
+        destination: "/games/777-poker-game-apk-pakistan",
+        permanent: true,
+      },
+      {
+        source: "/guides/777-pkr-game-cd22-pakistan",
+        destination: "/games/cd22-game-pakistan",
+        permanent: true,
+      },
+      {
+        source: "/games/p88-877bet-game-apk-pakistan",
+        destination: "/games/877bet-game-apk-pakistan",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withContentlayer(withBundleAnalyzer(nextConfig));

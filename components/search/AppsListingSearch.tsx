@@ -6,7 +6,13 @@ import { useDeferredValue, useMemo, useState } from "react";
 
 import type { SearchableItem } from "@/lib/content";
 
-export function AppsListingSearch({ items }: { items: SearchableItem[] }) {
+export function AppsListingSearch({
+  items,
+  placeholder = "Instant search apps…",
+}: {
+  items: SearchableItem[];
+  placeholder?: string;
+}) {
   const [query, setQuery] = useState("");
   const deferred = useDeferredValue(query);
 
@@ -33,7 +39,7 @@ export function AppsListingSearch({ items }: { items: SearchableItem[] }) {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Instant search apps…"
+          placeholder={placeholder}
           className="w-full rounded-xl border border-border-subtle bg-bg-card/80 px-4 py-2.5 text-sm text-text placeholder:text-text-muted focus:border-accent focus:outline-none"
         />
       </label>

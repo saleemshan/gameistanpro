@@ -4,7 +4,8 @@ import Link from "next/link";
 
 import { FilterBar } from "@/components/listing/FilterBar";
 import { Badge } from "@/components/ui/Badge";
-import { getAllGuides } from "@/lib/content";
+import { AppsListingSearch } from "@/components/search/AppsListingSearch";
+import { getAllGuides, getAllSearchableItems } from "@/lib/content";
 import { absoluteUrl } from "@/lib/seo";
 import { formatPkDate } from "@/lib/utils";
 import type { Guide } from "contentlayer/generated";
@@ -34,6 +35,8 @@ export default async function GuidesPage({
   let list = getAllGuides();
   if (cat) list = list.filter((g) => g.category === cat);
 
+  const searchItems = getAllSearchableItems().filter((i) => i.kind === "guide");
+
   const q = (c?: Guide["category"]) => {
     if (!c) return "/guides";
     return `/guides?category=${c}`;
@@ -58,6 +61,10 @@ export default async function GuidesPage({
           Editorial articles covering APK safety, fake apps, and wallet hygiene.
         </p>
       </div>
+      <AppsListingSearch
+        items={searchItems}
+        placeholder="Search guides by title or tag…"
+      />
       <FilterBar title="Category" chips={chips} />
       <div className="grid gap-6 md:grid-cols-2">
         {list.map((g) => (

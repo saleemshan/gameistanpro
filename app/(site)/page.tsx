@@ -30,9 +30,9 @@ export default function HomePage() {
       <HeroSection />
       <TopRatedSection />
       <LatestAppsSection />
+      <GeneralGuidesSection />
       <CasinoGamesSection />
       <GamesSection />
-      <GeneralGuidesSection />
       <WhyChooseSection />
       <SafeDownloadGuideSection />
     </div>

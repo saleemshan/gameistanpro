@@ -6,12 +6,12 @@ import { getAllGuides } from "@/lib/content";
 import { formatPkDate } from "@/lib/utils";
 
 export function GeneralGuidesSection() {
-  const guides = getAllGuides().slice(0, 4);
+  const guides = getAllGuides().slice(0, 6);
   return (
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h2 className="font-display text-2xl font-bold text-text">
-          General guides
+          Guides &amp; long-form reviews
         </h2>
         <Link
           href="/guides"

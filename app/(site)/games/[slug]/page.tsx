@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { AppDescription } from "@/components/detail/AppDescription";
 import { AppHero } from "@/components/detail/AppHero";
@@ -19,7 +19,12 @@ import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { FAQPageJsonLd } from "@/components/seo/FAQPageJsonLd";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { gameToCardModel } from "@/lib/card-mappers";
-import { getAllGames, getGameBySlug, getRelatedGames } from "@/lib/content";
+import {
+  getAllGames,
+  getGameBySlug,
+  getGuideBySlug,
+  getRelatedGames,
+} from "@/lib/content";
 import { absoluteUrl, siteConfig } from "@/lib/seo";
 import { formatPkDate } from "@/lib/utils";
 
@@ -36,7 +41,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const game = getGameBySlug(slug);
-  if (!game) return { title: "Not found" };
+  if (!game) {
+    const guide = getGuideBySlug(slug);
+    if (guide)
+      return {
+        title: guide.title,
+        description: guide.excerpt,
+        alternates: { canonical: absoluteUrl(guide.url) },
+      };
+    return { title: "Not found" };
+  }
   const path = `/games/${slug}`;
   const title = `${game.title} download APK – real earning app Pakistan | ${siteConfig.name}`;
   return {
@@ -71,7 +85,11 @@ export default async function GameDetailPage({
 }) {
   const { slug } = await params;
   const game = getGameBySlug(slug);
-  if (!game) notFound();
+  if (!game) {
+    const guide = getGuideBySlug(slug);
+    if (guide) redirect(guide.url);
+    notFound();
+  }
 
   const crumbs = [
     { name: "Home", href: "/" },

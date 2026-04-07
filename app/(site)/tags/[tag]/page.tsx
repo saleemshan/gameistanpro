@@ -24,7 +24,7 @@ export async function generateMetadata({
   const name = map.get(tag);
   if (!name) return { title: "Tag" };
   const items = getItemsByTagSlug(tag);
-  const title = `Apps tagged: ${name} – download in Pakistan`;
+  const title = `Tagged: ${name} – apps, games & guides`;
   return {
     title,
     description: `Listings tagged “${name}” for Pakistani players browsing APKs and guides.`,
@@ -53,7 +53,7 @@ export default async function TagPage({
     <div className="space-y-8">
       <div>
         <h1 className="font-display text-3xl font-bold text-text md:text-4xl">
-          Apps tagged: {name}
+          Tagged: {name}
         </h1>
         <p className="mt-2 text-text-muted">
           {items.length} entr{items.length === 1 ? "y" : "ies"} across apps, games, and guides.
