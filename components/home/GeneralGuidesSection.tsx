@@ -1,0 +1,55 @@
+import Image from "next/image";
+import Link from "next/link";
+
+import { Badge } from "@/components/ui/Badge";
+import { getAllGuides } from "@/lib/content";
+import { formatPkDate } from "@/lib/utils";
+
+export function GeneralGuidesSection() {
+  const guides = getAllGuides().slice(0, 4);
+  return (
+    <section className="space-y-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <h2 className="font-display text-2xl font-bold text-text">
+          General guides
+        </h2>
+        <Link
+          href="/guides"
+          className="text-sm font-medium text-accent hover:underline"
+        >
+          View all guides
+        </Link>
+      </div>
+      <ul className="space-y-4">
+        {guides.map((g) => (
+          <li
+            key={g.slug}
+            className="flex flex-col gap-4 rounded-xl border border-border-subtle bg-bg-card/50 p-4 backdrop-blur-sm sm:flex-row"
+          >
+            <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-lg sm:aspect-[16/10] sm:w-48">
+              <Image
+                src={g.coverImage}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="200px"
+              />
+            </div>
+            <div className="min-w-0 flex-1 space-y-2">
+              <Badge variant="accent">{g.category}</Badge>
+              <Link href={g.url}>
+                <h3 className="font-display text-lg font-semibold text-text hover:text-accent">
+                  {g.title}
+                </h3>
+              </Link>
+              <p className="text-sm text-text-muted">{g.excerpt}</p>
+              <p className="text-xs text-text-muted">
+                {formatPkDate(g.publishedAt)}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}

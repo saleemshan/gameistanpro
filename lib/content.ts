@@ -1,0 +1,194 @@
+import { allApps, allGames, allGuides } from "contentlayer/generated";
+import type { App, Game, Guide } from "contentlayer/generated";
+
+import { slugifyTag } from "@/lib/utils";
+
+export function getAllApps(): App[] {
+  return [...allApps].sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
+}
+
+export function getAllGames(): Game[] {
+  return [...allGames].sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
+}
+
+export function getAllGuides(): Guide[] {
+  return [...allGuides].sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
+}
+
+export function getAppBySlug(slug: string): App | undefined {
+  return allApps.find((a) => a.slug === slug);
+}
+
+export function getGameBySlug(slug: string): Game | undefined {
+  return allGames.find((g) => g.slug === slug);
+}
+
+export function getGuideBySlug(slug: string): Guide | undefined {
+  return allGuides.find((g) => g.slug === slug);
+}
+
+export function getTopRatedApps(limit = 6): App[] {
+  return [...getAllApps()]
+    .sort((a, b) => b.rating - a.rating || b.votes - a.votes)
+    .slice(0, limit);
+}
+
+export function getTopRatedGames(limit = 6): Game[] {
+  return [...getAllGames()]
+    .sort((a, b) => b.rating - a.rating || b.votes - a.votes)
+    .slice(0, limit);
+}
+
+export function getFeaturedGamesInCategory(
+  category: Game["category"],
+  limit = 6,
+): Game[] {
+  return getAllGames()
+    .filter((g) => g.category === category)
+    .slice(0, limit);
+}
+
+export function getRelatedGames(
+  game: Game,
+  limit = 4,
+): Game[] {
+  return getAllGames()
+    .filter((g) => g.slug !== game.slug && g.category === game.category)
+    .slice(0, limit);
+}
+
+export function getRelatedApps(app: App, limit = 4): App[] {
+  return getAllApps()
+    .filter((a) => a.slug !== app.slug && a.category === app.category)
+    .slice(0, limit);
+}
+
+export function getMostViewedApps(limit = 5): App[] {
+  return [...getAllApps()]
+    .sort((a, b) => b.views - a.views)
+    .slice(0, limit);
+}
+
+export function getMostViewedGames(limit = 5): Game[] {
+  return [...getAllGames()]
+    .sort((a, b) => b.views - a.views)
+    .slice(0, limit);
+}
+
+export function getMostRatedGames(limit = 5): Game[] {
+  return [...getAllGames()]
+    .sort((a, b) => b.votes - a.votes)
+    .slice(0, limit);
+}
+
+export function getAppCategorySlugs(): string[] {
+  const s = new Set<string>();
+  for (const a of allApps) s.add(a.category);
+  return [...s];
+}
+
+export function getGameCategorySlugs(): string[] {
+  const s = new Set<string>();
+  for (const g of allGames) s.add(g.category);
+  return [...s];
+}
+
+export function getAllCategorySlugs(): string[] {
+  return [...new Set([...getAppCategorySlugs(), ...getGameCategorySlugs()])];
+}
+
+export function getAppsByCategory(category: string): App[] {
+  return getAllApps().filter((a) => a.category === category);
+}
+
+export function getGamesByCategory(category: string): Game[] {
+  return getAllGames().filter((g) => g.category === category);
+}
+
+export function getGuidesByCategory(category: Guide["category"]): Guide[] {
+  return getAllGuides().filter((g) => g.category === category);
+}
+
+export type SearchableItem = {
+  id: string;
+  kind: "app" | "game" | "guide";
+  title: string;
+  slug: string;
+  href: string;
+  shortDescription: string;
+  tags: string[];
+  category: string;
+};
+
+export function getAllSearchableItems(): SearchableItem[] {
+  const apps: SearchableItem[] = getAllApps().map((a) => ({
+    id: `app:${a.slug}`,
+    kind: "app" as const,
+    title: a.title,
+    slug: a.slug,
+    href: a.url,
+    shortDescription: a.shortDescription,
+    tags: a.tags,
+    category: a.category,
+  }));
+  const games: SearchableItem[] = getAllGames().map((g) => ({
+    id: `game:${g.slug}`,
+    kind: "game" as const,
+    title: g.title,
+    slug: g.slug,
+    href: g.url,
+    shortDescription: g.shortDescription,
+    tags: g.tags,
+    category: g.category,
+  }));
+  const guides: SearchableItem[] = getAllGuides().map((g) => ({
+    id: `guide:${g.slug}`,
+    kind: "guide" as const,
+    title: g.title,
+    slug: g.slug,
+    href: g.url,
+    shortDescription: g.excerpt,
+    tags: g.tags,
+    category: g.category,
+  }));
+  return [...apps, ...games, ...guides];
+}
+
+export function getTagSlugMap(): Map<string, string> {
+  const m = new Map<string, string>();
+  for (const item of getAllSearchableItems()) {
+    for (const t of item.tags) {
+      const key = slugifyTag(t);
+      if (!m.has(key)) m.set(key, t);
+    }
+  }
+  return m;
+}
+
+export function getItemsByTagSlug(tagSlug: string): SearchableItem[] {
+  const map = getTagSlugMap();
+  const canonical = map.get(tagSlug);
+  if (!canonical) return [];
+  return getAllSearchableItems().filter((i) =>
+    i.tags.some((t) => slugifyTag(t) === tagSlug),
+  );
+}
+
+export function getRelatedGuides(guide: Guide, limit = 3): Guide[] {
+  return getAllGuides()
+    .filter(
+      (g) =>
+        g.slug !== guide.slug &&
+        g.tags.some((t) => guide.tags.includes(t)),
+    )
+    .slice(0, limit);
+}
