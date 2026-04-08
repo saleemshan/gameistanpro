@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 86400,
     remotePatterns: [
       { protocol: "https", hostname: "placehold.co", pathname: "/**" },
+      {
+        protocol: "https",
+        hostname: "gameistan.com.pk",
+        pathname: "/wp-content/uploads/**",
+      },
     ],
   },
   headers: async () => [
