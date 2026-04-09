@@ -6,12 +6,18 @@ import { Pagination } from "@/components/listing/Pagination";
 import { SortDropdown } from "@/components/listing/SortDropdown";
 import { ListingSidebar } from "@/components/layout/ListingSidebar";
 import { AppsListingSearch } from "@/components/search/AppsListingSearch";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { appToCardModel } from "@/lib/card-mappers";
 import { getAllApps, getAllSearchableItems } from "@/lib/content";
 import { LISTINGS_PER_PAGE } from "@/lib/constants";
 import { sortProducts } from "@/lib/listing-sort";
 import type { SortValue } from "@/components/listing/SortDropdown";
-import { absoluteUrl, buildListingSearchPath } from "@/lib/seo";
+import {
+  absoluteUrl,
+  buildListingSearchPath,
+  getSiteUrl,
+  siteConfig,
+} from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -122,9 +128,41 @@ export default async function AppsPage({
 
   const searchItems = getAllSearchableItems().filter((i) => i.kind === "app");
 
+  const listingPath = buildListingSearchPath("/apps", {
+    category: cat,
+    sort,
+    page: safePage,
+  });
+  const listingUrl = absoluteUrl(listingPath);
+  const startIndex = (safePage - 1) * LISTINGS_PER_PAGE;
+
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${listingUrl}#collection`,
+    url: listingUrl,
+    name: "Apps, tools & injectors – download free APKs in Pakistan",
+    isPartOf: {
+      "@type": "WebSite",
+      url: getSiteUrl(),
+      name: siteConfig.name,
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: list.length,
+      itemListElement: slice.map((a, i) => ({
+        "@type": "ListItem",
+        position: startIndex + i + 1,
+        url: absoluteUrl(a.url),
+        name: a.title,
+      })),
+    },
+  };
+
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_280px]">
       <div className="space-y-8">
+        <JsonLd data={collectionJsonLd} />
         <div>
           <h1 className="font-display text-3xl font-bold text-text md:text-4xl">
             Apps, tools &amp; injectors – download free APKs in Pakistan

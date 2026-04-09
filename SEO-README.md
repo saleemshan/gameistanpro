@@ -27,7 +27,8 @@ This project uses the **Next.js App Router** metadata API, **dynamic** `app/site
 | Route pattern | JSON-LD types |
 |---------------|----------------|
 | All pages (root layout) | **Organization**, **WebSite** (+ SearchAction) |
-| `/games/[slug]`, `/apps/[slug]` | **BreadcrumbList**, **SoftwareApplication** (aggregateRating only if votes ≥ 5), **FAQPage** (if FAQs exist), **TechArticle** |
+| `/games`, `/apps` | **CollectionPage** + **ItemList** (current page slice; canonical matches facet + pagination) |
+| `/games/[slug]`, `/apps/[slug]` (games live at `/[slug]`) | **BreadcrumbList**, **SoftwareApplication** (+ **VideoGame** on games), aggregateRating only if votes ≥ 5, **FAQPage** (if FAQs exist) |
 | `/guides/[slug]` | **BreadcrumbList**, **Article** |
 | Listing pages | Rely on page-level `metadata` / `generateMetadata` (no extra schema required) |
 

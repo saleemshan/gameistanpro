@@ -6,12 +6,18 @@ import { Pagination } from "@/components/listing/Pagination";
 import { SortDropdown } from "@/components/listing/SortDropdown";
 import { ListingSidebar } from "@/components/layout/ListingSidebar";
 import { AppsListingSearch } from "@/components/search/AppsListingSearch";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { gameToCardModel } from "@/lib/card-mappers";
 import { getAllGames, getAllSearchableItems } from "@/lib/content";
 import { LISTINGS_PER_PAGE } from "@/lib/constants";
 import type { SortValue } from "@/components/listing/SortDropdown";
 import { sortProducts } from "@/lib/listing-sort";
-import { absoluteUrl, buildListingSearchPath } from "@/lib/seo";
+import {
+  absoluteUrl,
+  buildListingSearchPath,
+  getSiteUrl,
+  siteConfig,
+} from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -123,9 +129,41 @@ export default async function GamesPage({
 
   const searchItems = getAllSearchableItems().filter((i) => i.kind === "game");
 
+  const listingPath = buildListingSearchPath("/games", {
+    category: cat,
+    sort,
+    page: safePage,
+  });
+  const listingUrl = absoluteUrl(listingPath);
+  const startIndex = (safePage - 1) * LISTINGS_PER_PAGE;
+
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${listingUrl}#collection`,
+    url: listingUrl,
+    name: "Casino & real earning games in Pakistan – download & play 2026",
+    isPartOf: {
+      "@type": "WebSite",
+      url: getSiteUrl(),
+      name: siteConfig.name,
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: list.length,
+      itemListElement: slice.map((g, i) => ({
+        "@type": "ListItem",
+        position: startIndex + i + 1,
+        url: absoluteUrl(g.url),
+        name: g.title,
+      })),
+    },
+  };
+
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_280px]">
       <div className="space-y-8">
+        <JsonLd data={collectionJsonLd} />
         <div>
           <h1 className="font-display text-3xl font-bold text-text md:text-4xl">
             Casino &amp; real earning games in Pakistan – download &amp; play 2026

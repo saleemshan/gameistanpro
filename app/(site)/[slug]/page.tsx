@@ -17,7 +17,6 @@ import { ListingSidebar } from "@/components/layout/ListingSidebar";
 import { SoftwareApplicationJsonLd } from "@/components/seo/AppJsonLd";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { FAQPageJsonLd } from "@/components/seo/FAQPageJsonLd";
-import { JsonLd } from "@/components/seo/JsonLd";
 import { gameToCardModel } from "@/lib/card-mappers";
 import { getAllGames, getGameBySlug, getRelatedGames } from "@/lib/content";
 import { absoluteUrl, siteConfig } from "@/lib/seo";
@@ -98,25 +97,16 @@ export default async function RootGameDetailPage({
           slugPath={game.url}
           rating={game.rating}
           votes={game.votes}
+          kind="game"
+          coverImage={game.coverImage}
+          screenshots={game.screenshots}
+          softwareVersion={game.version}
+          datePublished={game.publishedAt}
+          dateModified={game.updatedAt}
+          tags={game.tags}
+          categoryKey={game.category}
         />
         <FAQPageJsonLd faqs={game.faqs} />
-        <JsonLd
-          data={{
-            "@context": "https://schema.org",
-            "@type": "TechArticle",
-            headline: game.title,
-            datePublished: game.publishedAt,
-            dateModified: game.updatedAt,
-            author: { "@type": "Organization", name: siteConfig.name },
-            publisher: { "@type": "Organization", name: siteConfig.name },
-            image: [absoluteUrl(game.coverImage)],
-            url: absoluteUrl(game.url),
-            mainEntityOfPage: {
-              "@type": "WebPage",
-              "@id": absoluteUrl(game.url),
-            },
-          }}
-        />
         <Breadcrumb items={crumbs} />
         <ResponsibleGamblingBanner />
         <AppHero

@@ -1,4 +1,5 @@
 import { JsonLd } from "@/components/seo/JsonLd";
+import { toPlainTextForSchema } from "@/lib/plain-text";
 
 export function FAQPageJsonLd({
   faqs,
@@ -13,10 +14,10 @@ export function FAQPageJsonLd({
         "@type": "FAQPage",
         mainEntity: faqs.map((f) => ({
           "@type": "Question",
-          name: f.question,
+          name: toPlainTextForSchema(f.question),
           acceptedAnswer: {
             "@type": "Answer",
-            text: f.answer,
+            text: toPlainTextForSchema(f.answer),
           },
         })),
       }}

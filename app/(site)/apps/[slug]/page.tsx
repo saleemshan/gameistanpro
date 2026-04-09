@@ -16,7 +16,6 @@ import { ListingSidebar } from "@/components/layout/ListingSidebar";
 import { SoftwareApplicationJsonLd } from "@/components/seo/AppJsonLd";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { FAQPageJsonLd } from "@/components/seo/FAQPageJsonLd";
-import { JsonLd } from "@/components/seo/JsonLd";
 import { appToCardModel } from "@/lib/card-mappers";
 import { getAllApps, getAppBySlug, getRelatedApps } from "@/lib/content";
 import { absoluteUrl, siteConfig } from "@/lib/seo";
@@ -96,25 +95,16 @@ export default async function AppDetailPage({
           slugPath={app.url}
           rating={app.rating}
           votes={app.votes}
+          kind="app"
+          coverImage={app.coverImage}
+          screenshots={app.screenshots}
+          softwareVersion={app.version}
+          datePublished={app.publishedAt}
+          dateModified={app.updatedAt}
+          tags={app.tags}
+          categoryKey={app.category}
         />
         <FAQPageJsonLd faqs={app.faqs} />
-        <JsonLd
-          data={{
-            "@context": "https://schema.org",
-            "@type": "TechArticle",
-            headline: app.title,
-            datePublished: app.publishedAt,
-            dateModified: app.updatedAt,
-            author: { "@type": "Organization", name: siteConfig.name },
-            publisher: { "@type": "Organization", name: siteConfig.name },
-            image: [absoluteUrl(app.coverImage)],
-            url: absoluteUrl(app.url),
-            mainEntityOfPage: {
-              "@type": "WebPage",
-              "@id": absoluteUrl(app.url),
-            },
-          }}
-        />
         <Breadcrumb items={crumbs} />
         <AppHero
           title={app.title}
