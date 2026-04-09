@@ -10,7 +10,7 @@ test("homepage loads and download CTA exists", async ({ page }) => {
 });
 
 test("game detail has download section", async ({ page }) => {
-  await page.goto("/games/p999-game-download-apk-pakistan", {
+  await page.goto("/p999-game", {
     waitUntil: "domcontentloaded",
   });
   await expect(page.locator("h1").first()).toContainText(/P999/i, {

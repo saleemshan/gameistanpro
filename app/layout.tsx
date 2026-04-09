@@ -37,6 +37,11 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
+  icons: {
+    icon: [{ url: "/images/brand/gameistan-pro-logo.png", type: "image/png" }],
+    shortcut: ["/images/brand/gameistan-pro-logo.png"],
+    apple: [{ url: "/images/brand/gameistan-pro-logo.png", type: "image/png" }],
+  },
   title: {
     default: siteConfig.defaultTitle,
     template: `%s | ${siteConfig.name}`,

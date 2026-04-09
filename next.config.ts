@@ -41,22 +41,27 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/guides/777taz-game-apk-pakistan",
-        destination: "/games/777-poker-game-apk-pakistan",
+        destination: "/777poker-game",
         permanent: true,
       },
       {
         source: "/guides/777-pkr-game-cd22-pakistan",
-        destination: "/games/cd22-game-pakistan",
+        destination: "/cd22-game",
         permanent: true,
       },
       {
         source: "/games/p88-877bet-game-apk-pakistan",
-        destination: "/games/877bet-game-apk-pakistan",
+        destination: "/877bet-game",
         permanent: true,
       },
       {
         source: "/games/j188-color-prediction-apk-pakistan",
-        destination: "/games/j188-game-apk-pakistan",
+        destination: "/j188-game",
+        permanent: true,
+      },
+      {
+        source: "/games/:slug",
+        destination: "/:slug",
         permanent: true,
       },
     ];

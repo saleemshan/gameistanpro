@@ -96,7 +96,7 @@ export const Game = defineDocumentType(() => ({
     installSteps: { type: "list", of: InstallStepNested, default: [] },
   },
   computedFields: {
-    url: { type: "string", resolve: (doc) => `/games/${doc.slug}` },
+    url: { type: "string", resolve: (doc) => `/${doc.slug}` },
   },
 }));
 
