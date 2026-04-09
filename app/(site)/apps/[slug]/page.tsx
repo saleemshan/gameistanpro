@@ -107,6 +107,12 @@ export default async function AppDetailPage({
             dateModified: app.updatedAt,
             author: { "@type": "Organization", name: siteConfig.name },
             publisher: { "@type": "Organization", name: siteConfig.name },
+            image: [absoluteUrl(app.coverImage)],
+            url: absoluteUrl(app.url),
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": absoluteUrl(app.url),
+            },
           }}
         />
         <Breadcrumb items={crumbs} />
@@ -128,7 +134,7 @@ export default async function AppDetailPage({
         {app.screenshots.length > 0 ? (
           <section className="space-y-3">
             <h2 className="font-display text-xl font-bold text-text">Screenshots</h2>
-            <ScreenshotGallery urls={app.screenshots} />
+            <ScreenshotGallery urls={app.screenshots} productTitle={app.title} />
           </section>
         ) : null}
         <InstallSteps steps={app.installSteps} />

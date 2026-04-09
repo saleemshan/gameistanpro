@@ -6,6 +6,7 @@ import {
   getAllGuides,
   getAllCategorySlugs,
   getTagSlugMap,
+  isTagPageIndexable,
 } from "@/lib/content";
 import { getSiteUrl } from "@/lib/seo";
 
@@ -50,11 +51,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.65,
   }));
 
-  const tags = [...getTagSlugMap().keys()].map((t) => ({
-    url: `${base}/tags/${t}`,
-    changeFrequency: "weekly" as const,
-    priority: 0.55,
-  }));
+  // SEO FIX: Omit thin tag URLs (noindex in generateMetadata) to avoid sitemap vs robots conflicts.
+  const tags = [...getTagSlugMap().keys()]
+    .filter((t) => isTagPageIndexable(t))
+    .map((t) => ({
+      url: `${base}/tags/${t}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.55,
+    }));
 
   return [
     ...staticRoutes,

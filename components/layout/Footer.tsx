@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import { siteConfig } from "@/lib/seo";
+import { SiteLogoLink } from "@/components/brand/SiteLogoLink";
+import { getContactEmail, siteConfig } from "@/lib/seo";
 
 const footerLinks = [
   { href: "/apps", label: "Apps & tools" },
@@ -18,12 +19,22 @@ export function Footer() {
     <footer className="mt-auto border-t border-border-subtle bg-bg-deep/90">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 md:flex-row md:justify-between">
         <div className="max-w-md space-y-3">
-          <p className="font-display text-lg font-bold text-text">
-            {siteConfig.name}
-          </p>
+          <div className="flex flex-col gap-3">
+            <SiteLogoLink size="sm" />
+            <p className="font-display text-sm font-semibold text-text-muted">
+              {siteConfig.name}
+            </p>
+          </div>
           <p className="text-sm text-text-muted">{siteConfig.description}</p>
           <p className="text-xs text-danger">
             18+ only. Gambling involves risk. Play responsibly.
+          </p>
+          {/* SEO FIX: Visible contact supports E-E-A-T; email from NEXT_PUBLIC_CONTACT_EMAIL. */}
+          <p className="text-xs text-text-muted">
+            Contact:{" "}
+            <a href={`mailto:${getContactEmail()}`} className="text-accent hover:underline">
+              {getContactEmail()}
+            </a>
           </p>
         </div>
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">

@@ -89,7 +89,13 @@ export default async function GuideDetailPage({
           dateModified: guide.updatedAt,
           author: { "@type": "Organization", name: guide.author },
           publisher: { "@type": "Organization", name: siteConfig.name },
-          image: guide.coverImage,
+          // SEO FIX: Article.image must be absolute URL; add mainEntityOfPage for clarity.
+          image: [absoluteUrl(guide.coverImage)],
+          url: absoluteUrl(guide.url),
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": absoluteUrl(guide.url),
+          },
         }}
       />
       <div className={toc.length > 0 ? "min-w-0 space-y-8" : "space-y-8"}>
@@ -97,7 +103,7 @@ export default async function GuideDetailPage({
         <div className="relative aspect-[21/9] w-full overflow-hidden rounded-xl border border-border-subtle">
           <Image
             src={guide.coverImage}
-            alt=""
+            alt={`Cover image for “${guide.title}” — Pakistani gaming guide`}
             fill
             priority
             className="object-cover"

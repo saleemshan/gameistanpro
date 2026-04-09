@@ -6,6 +6,7 @@ function buildHref(
   pathname: string,
   page: number,
   extra: Record<string, string | undefined>,
+  hash?: string,
 ): string {
   const sp = new URLSearchParams();
   for (const [k, v] of Object.entries(extra)) {
@@ -13,7 +14,9 @@ function buildHref(
   }
   if (page > 1) sp.set("page", String(page));
   const q = sp.toString();
-  return q ? `${pathname}?${q}` : pathname;
+  const base = q ? `${pathname}?${q}` : pathname;
+  const h = hash?.replace(/^#/, "");
+  return h ? `${base}#${h}` : base;
 }
 
 export function Pagination({
@@ -21,12 +24,15 @@ export function Pagination({
   page,
   totalPages,
   extraParams = {},
+  scrollAnchor,
   className,
 }: {
   pathname: string;
   page: number;
   totalPages: number;
   extraParams?: Record<string, string | undefined>;
+  /** e.g. `section-id` — appended as `#section-id` on every page link */
+  scrollAnchor?: string;
   className?: string;
 }) {
   if (totalPages <= 1) return null;
@@ -45,7 +51,7 @@ export function Pagination({
     >
       {page > 1 ? (
         <Link
-          href={buildHref(pathname, page - 1, extraParams)}
+          href={buildHref(pathname, page - 1, extraParams, scrollAnchor)}
           className="rounded-lg border border-border-subtle px-3 py-1.5 text-sm text-text hover:border-accent/40"
         >
           Previous
@@ -57,7 +63,7 @@ export function Pagination({
             <span className="text-text-muted">…</span>
           ) : null}
           <Link
-            href={buildHref(pathname, p, extraParams)}
+            href={buildHref(pathname, p, extraParams, scrollAnchor)}
             className={cn(
               "min-w-9 rounded-lg border px-3 py-1.5 text-center text-sm",
               p === page
@@ -72,7 +78,7 @@ export function Pagination({
       ))}
       {page < totalPages ? (
         <Link
-          href={buildHref(pathname, page + 1, extraParams)}
+          href={buildHref(pathname, page + 1, extraParams, scrollAnchor)}
           className="rounded-lg border border-border-subtle px-3 py-1.5 text-sm text-text hover:border-accent/40"
         >
           Next

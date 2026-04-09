@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { SITE_HERO_IMAGE } from "@/lib/site-media";
 
 export function HeroSection() {
   return (
@@ -29,9 +30,9 @@ export function HeroSection() {
             transition={{ delay: 0.08, duration: 0.45 }}
             className="mt-4 max-w-xl text-pretty text-lg text-text-muted"
           >
-            Trusted reviews of casino APKs, tools, and earning apps with JazzCash &
-            EasyPaisa context—structured metadata, safe install guides, and fast pages
-            built for Pakistani players.
+            Independent guides to color-prediction and casino-style earning games—PKR,
+            JazzCash &amp; EasyPaisa context, version/size metadata, and safe sideload
+            checklists for Pakistani players.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -40,10 +41,10 @@ export function HeroSection() {
             className="mt-8 flex flex-wrap gap-3"
           >
             <Button asChild size="lg">
-              <Link href="/apps">Browse apps</Link>
+              <Link href="/games">Browse games</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href="/games">Explore games</Link>
+              <Link href="/guides">Read guides</Link>
             </Button>
           </motion.div>
         </div>
@@ -51,15 +52,15 @@ export function HeroSection() {
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.12, duration: 0.5 }}
-          className="relative mx-auto aspect-[4/3] w-full max-w-md overflow-hidden rounded-xl border border-accent/20 shadow-[0_0_40px_rgba(0,255,136,0.12)]"
+          className="relative mx-auto aspect-video w-full max-w-2xl overflow-hidden rounded-xl border border-accent/20 shadow-[0_0_40px_rgba(0,255,136,0.12)]"
         >
           <Image
-            src="https://placehold.co/800x600/0A0F1E/00FF88/webp?text=PK+Gaming"
-            alt=""
-            width={800}
-            height={600}
+            src={SITE_HERO_IMAGE.src}
+            alt={SITE_HERO_IMAGE.alt}
+            fill
+            sizes="(max-width: 1024px) 100vw, 672px"
             priority
-            className="object-cover"
+            className="object-cover object-center"
           />
         </motion.div>
       </div>

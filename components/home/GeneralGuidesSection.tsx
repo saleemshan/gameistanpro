@@ -29,7 +29,7 @@ export function GeneralGuidesSection() {
             <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-lg sm:aspect-[16/10] sm:w-48">
               <Image
                 src={g.coverImage}
-                alt=""
+                alt={`Cover image for the guide “${g.title}”`}
                 fill
                 className="object-cover"
                 sizes="200px"

@@ -15,7 +15,7 @@ const SLUG_BY_FILE = {
   "777-poker-game-apk-pakistan.mdx": "777taz-game",
   "cd22-game-pakistan.mdx": "777-pkr-game",
   "588win-game-download-apk-pakistan.mdx": "zh88-game",
-  "j188-color-prediction.mdx": "j188-game",
+  "j188-game-apk-pakistan.mdx": "j188-game",
   "dk777-pakistan-review.mdx": "dk-777-game",
   "p999-game-download-apk-pakistan.mdx":
     "p999-game-download-apk-real-earning-app-in-pakistan",

@@ -54,6 +54,11 @@ const nextConfig: NextConfig = {
         destination: "/games/877bet-game-apk-pakistan",
         permanent: true,
       },
+      {
+        source: "/games/j188-color-prediction-apk-pakistan",
+        destination: "/games/j188-game-apk-pakistan",
+        permanent: true,
+      },
     ];
   },
 };

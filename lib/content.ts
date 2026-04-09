@@ -48,6 +48,50 @@ export function getTopRatedGames(limit = 6): Game[] {
     .slice(0, limit);
 }
 
+/** Homepage order: featured first, then rating / votes / recency. */
+export function getSortedHomepageGames(): Game[] {
+  const featuredRank = (g: Game) => (g.featured ? 1 : 0);
+  return [...getAllGames()].sort((a, b) => {
+    if (featuredRank(b) !== featuredRank(a))
+      return featuredRank(b) - featuredRank(a);
+    const byRating = b.rating - a.rating;
+    if (byRating !== 0) return byRating;
+    const byVotes = b.votes - a.votes;
+    if (byVotes !== 0) return byVotes;
+    return (
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    );
+  });
+}
+
+export function getHomepageGamesPage(
+  page: number,
+  pageSize: number,
+): {
+  games: Game[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  startIndex: number;
+} {
+  const sorted = getSortedHomepageGames();
+  const total = sorted.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  let safePage = Number.isFinite(page) && page >= 1 ? Math.floor(page) : 1;
+  if (safePage > totalPages) safePage = totalPages;
+  const startIndex = (safePage - 1) * pageSize;
+  const games = sorted.slice(startIndex, startIndex + pageSize);
+  return {
+    games,
+    page: safePage,
+    pageSize,
+    total,
+    totalPages,
+    startIndex,
+  };
+}
+
 export function getFeaturedGamesInCategory(
   category: Game["category"],
   limit = 6,
@@ -181,6 +225,11 @@ export function getItemsByTagSlug(tagSlug: string): SearchableItem[] {
   return getAllSearchableItems().filter((i) =>
     i.tags.some((t) => slugifyTag(t) === tagSlug),
   );
+}
+
+// SEO FIX: Same rule as app/(site)/tags/[tag]/page.tsx — thin tag pages are noindex and must not appear in sitemap.
+export function isTagPageIndexable(tagSlug: string): boolean {
+  return getItemsByTagSlug(tagSlug).length >= 3;
 }
 
 export function getRelatedGuides(guide: Guide, limit = 3): Guide[] {

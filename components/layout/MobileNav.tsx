@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 
+import { SiteLogoLink } from "@/components/brand/SiteLogoLink";
 import { Button } from "@/components/ui/button";
 import { useUiStore } from "@/stores/use-ui-store";
 
@@ -29,10 +30,13 @@ export function MobileNav() {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/70 md:hidden" />
         <Dialog.Content className="fixed right-0 top-0 z-50 flex h-full w-[min(100vw-3rem,320px)] flex-col border-l border-border-subtle bg-bg-deep p-6 shadow-2xl md:hidden">
-          <div className="mb-8 flex items-center justify-between">
-            <Dialog.Title className="font-display text-lg font-bold text-text">
-              Menu
-            </Dialog.Title>
+          <div className="mb-8 flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <SiteLogoLink size="sm" />
+              <Dialog.Title className="font-display truncate text-lg font-bold text-text">
+                Menu
+              </Dialog.Title>
+            </div>
             <Dialog.Close asChild>
               <Button variant="ghost" size="icon" aria-label="Close menu">
                 <X className="size-5" />

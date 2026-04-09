@@ -4,7 +4,14 @@ import * as Dialog from "@radix-ui/react-dialog";
 import Image from "next/image";
 import { useState } from "react";
 
-export function ScreenshotGallery({ urls }: { urls: string[] }) {
+export function ScreenshotGallery({
+  urls,
+  productTitle,
+}: {
+  urls: string[];
+  /** SEO FIX: Contextual alts for gallery images (app/game name). */
+  productTitle?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   if (!urls.length) return null;
@@ -24,7 +31,11 @@ export function ScreenshotGallery({ urls }: { urls: string[] }) {
           >
             <Image
               src={src}
-              alt={`Screenshot ${i + 1}`}
+              alt={
+                productTitle
+                  ? `${productTitle} screenshot ${i + 1}`
+                  : `Screenshot ${i + 1}`
+              }
               fill
               className="object-cover"
               sizes="(max-width:640px) 50vw, 33vw"
@@ -40,7 +51,11 @@ export function ScreenshotGallery({ urls }: { urls: string[] }) {
           <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
             <Image
               src={urls[active] ?? urls[0]}
-              alt="Preview"
+              alt={
+                productTitle
+                  ? `${productTitle} screenshot preview`
+                  : "Screenshot preview"
+              }
               fill
               className="object-contain"
               sizes="900px"

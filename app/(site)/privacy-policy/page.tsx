@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
-import { JsonLd } from "@/components/seo/JsonLd";
-import { absoluteUrl, siteConfig } from "@/lib/seo";
+import { absoluteUrl, getContactEmail } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Privacy policy",
@@ -12,14 +11,6 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <article className="mx-auto max-w-3xl space-y-6">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: siteConfig.name,
-          url: absoluteUrl("/"),
-        }}
-      />
       <h1 className="font-display text-3xl font-bold text-text">Privacy policy</h1>
       <p className="text-sm text-text-muted">Last updated: 6 April 2026</p>
       <div className="space-y-4 text-text-muted">
@@ -47,7 +38,8 @@ export default function PrivacyPage() {
         </section>
         <section>
           <h2 className="font-display text-xl font-semibold text-text">Contact</h2>
-          <p>privacy@yourdomain.com</p>
+          {/* SEO FIX: Operational inbox from env (NEXT_PUBLIC_CONTACT_EMAIL) with sensible fallback. */}
+          <p>{getContactEmail()}</p>
         </section>
       </div>
     </article>

@@ -11,7 +11,7 @@ import { getAllApps, getAllSearchableItems } from "@/lib/content";
 import { LISTINGS_PER_PAGE } from "@/lib/constants";
 import { sortProducts } from "@/lib/listing-sort";
 import type { SortValue } from "@/components/listing/SortDropdown";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, buildListingSearchPath } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -30,19 +30,39 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const sp = await searchParams;
   const page = parsePage(sp.page);
+  const cat =
+    typeof sp.category === "string" && APP_CATS.includes(sp.category as (typeof APP_CATS)[number])
+      ? sp.category
+      : undefined;
+  const sort = (typeof sp.sort === "string" ? sp.sort : "latest") as SortValue;
+  // SEO FIX: Explicit self-canonical for every facet + page (never inherit root "/").
+  const path = buildListingSearchPath("/apps", { category: cat, sort, page });
+  const canonical = absoluteUrl(path);
+  const catTitle =
+    cat === "tools"
+      ? "Tools"
+      : cat === "injectors"
+        ? "Injectors"
+        : cat === "utilities"
+          ? "Utilities"
+          : cat === "apps"
+            ? "Apps"
+            : null;
   const title =
     page > 1
       ? `Apps & tools download Pakistan – Page ${page}`
-      : "Apps, tools & injectors – download free APKs in Pakistan";
+      : catTitle
+        ? `${catTitle} APKs & tools Pakistan – free downloads 2026`
+        : "Apps, tools & injectors – download free APKs in Pakistan";
   return {
     title,
     description:
       "Tools, injectors, and utilities for Pakistani Android users—structured APK metadata, mirrors, and editorial notes.",
-    alternates: { canonical: page > 1 ? undefined : absoluteUrl("/apps") },
+    alternates: { canonical },
     robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true },
     openGraph: {
       title,
-      url: absoluteUrl("/apps"),
+      url: canonical,
     },
   };
 }

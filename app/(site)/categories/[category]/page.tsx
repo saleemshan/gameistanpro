@@ -11,7 +11,7 @@ import {
 } from "@/lib/content";
 import { categoryHeading, categorySeoParagraph } from "@/lib/category-copy";
 import { LISTINGS_PER_PAGE } from "@/lib/constants";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, buildListingSearchPath } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -19,25 +19,37 @@ export async function generateStaticParams() {
   return getAllCategorySlugs().map((category) => ({ category }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ category: string }>;
-}): Promise<Metadata> {
-  const { category } = await params;
-  const label = categoryHeading(category);
-  const title = `${label} games & apps in Pakistan`;
-  return {
-    title,
-    description: categorySeoParagraph(category),
-    alternates: { canonical: absoluteUrl(`/categories/${category}`) },
-  };
-}
-
 function parsePage(v: string | string[] | undefined): number {
   const raw = typeof v === "string" ? v : v?.[0];
   const n = raw ? parseInt(raw, 10) : 1;
   return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ category: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const { category } = await params;
+  const sp = await searchParams;
+  const page = parsePage(sp.page);
+  const label = categoryHeading(category);
+  // SEO FIX: Paginated category hubs get self-canonicals and noindex on page>1 (matches games/apps).
+  const path = buildListingSearchPath(`/categories/${category}`, { page });
+  const canonical = absoluteUrl(path);
+  const title =
+    page > 1
+      ? `${label} games & apps in Pakistan – Page ${page}`
+      : `${label} games & apps in Pakistan`;
+  return {
+    title,
+    description: categorySeoParagraph(category),
+    alternates: { canonical },
+    robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true },
+    openGraph: { title, url: canonical },
+  };
 }
 
 export default async function CategoryPage({

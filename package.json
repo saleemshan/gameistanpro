@@ -9,7 +9,9 @@
     "lint": "eslint",
     "analyze": "ANALYZE=true pnpm build",
     "test": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "optimize:hero": "node scripts/optimize-hero.mjs",
+    "optimize:logo": "node scripts/build-brand-assets.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",
@@ -54,6 +56,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "jsdom": "^29.0.1",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.2"

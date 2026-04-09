@@ -25,6 +25,8 @@ export function AppHero({
           width={200}
           height={200}
           priority
+          // SEO FIX: Hint LCP image priority for Core Web Vitals (Next passes to fetchpriority).
+          fetchPriority="high"
           className="size-full object-cover"
         />
       </div>

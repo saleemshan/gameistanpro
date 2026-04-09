@@ -11,7 +11,7 @@ import { getAllGames, getAllSearchableItems } from "@/lib/content";
 import { LISTINGS_PER_PAGE } from "@/lib/constants";
 import type { SortValue } from "@/components/listing/SortDropdown";
 import { sortProducts } from "@/lib/listing-sort";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, buildListingSearchPath } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -42,17 +42,28 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const sp = await searchParams;
   const page = parsePage(sp.page);
+  const cat =
+    typeof sp.category === "string" &&
+    GAME_CATS.includes(sp.category as (typeof GAME_CATS)[number])
+      ? sp.category
+      : undefined;
+  const sort = (typeof sp.sort === "string" ? sp.sort : "latest") as SortValue;
+  // SEO FIX: Explicit self-canonical for every facet + page (never inherit root "/").
+  const path = buildListingSearchPath("/games", { category: cat, sort, page });
+  const canonical = absoluteUrl(path);
   const title =
     page > 1
       ? `Casino & earning games Pakistan – Page ${page}`
-      : "Casino & real earning games in Pakistan – download & play 2026";
+      : cat
+        ? `${GAME_LABELS[cat as (typeof GAME_CATS)[number]]} casino & earning games Pakistan – APKs 2026`
+        : "Casino & real earning games in Pakistan – download & play 2026";
   return {
     title,
     description:
       "Casino APKs, colour prediction titles, and card-room apps reviewed for Pakistani Android users.",
-    alternates: { canonical: page > 1 ? undefined : absoluteUrl("/games") },
+    alternates: { canonical },
     robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true },
-    openGraph: { title, url: absoluteUrl("/games") },
+    openGraph: { title, url: canonical },
   };
 }
 

@@ -5,8 +5,8 @@ test("homepage loads and download CTA exists", async ({ page }) => {
   await expect(page.locator("h1").first()).toContainText(/earning games/i, {
     timeout: 15_000,
   });
-  await page.getByRole("link", { name: /browse apps/i }).click();
-  await expect(page).toHaveURL(/\/apps/);
+  await page.getByRole("link", { name: /browse games/i }).click();
+  await expect(page).toHaveURL(/\/games/);
 });
 
 test("game detail has download section", async ({ page }) => {

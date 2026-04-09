@@ -1,11 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, JetBrains_Mono, Syne } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { Providers } from "@/components/providers";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { absoluteUrl, getSiteUrl, siteConfig } from "@/lib/seo";
+import { SITE_LOGO } from "@/lib/site-media";
+import {
+  absoluteUrl,
+  getDefaultOgImagePath,
+  getGoogleSiteVerification,
+  getOrgSameAs,
+  getSiteUrl,
+  siteConfig,
+} from "@/lib/seo";
 
 import "./globals.css";
 
@@ -40,7 +48,7 @@ export const metadata: Metadata = {
     "real money games pakistan",
     "pk earning apps",
   ],
-  alternates: { canonical: "/" },
+  // SEO FIX: No default canonical — child routes must set self-referencing canonicals (root "/" leaked to paginated listings).
   openGraph: {
     type: "website",
     locale: siteConfig.locale,
@@ -48,20 +56,34 @@ export const metadata: Metadata = {
     title: siteConfig.defaultTitle,
     description: siteConfig.description,
     url: getSiteUrl(),
+    // SEO FIX: Default share image when a route omits openGraph.images.
+    images: [
+      {
+        url: getDefaultOgImagePath(),
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.defaultTitle,
     description: siteConfig.description,
+    images: [getDefaultOgImagePath()],
+  },
+  verification: {
+    google: getGoogleSiteVerification(),
   },
 };
 
+// SEO FIX: Organization logo = brand mark (crawlable); sameAs from env when set.
 const orgSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: siteConfig.name,
   url: getSiteUrl(),
-  logo: absoluteUrl("/favicon.ico"),
+  logo: absoluteUrl(SITE_LOGO.src),
+  ...(getOrgSameAs().length ? { sameAs: getOrgSameAs() } : {}),
 };
 
 const websiteSchema = {
@@ -76,6 +98,16 @@ const websiteSchema = {
   },
 };
 
+// SEO FIX: Explicit mobile viewport (document for audits; matches Next defaults).
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0f1e" },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -87,6 +119,15 @@ export default function RootLayout({
       className="dark h-full"
       suppressHydrationWarning
     >
+      <head>
+        {/* SEO FIX: Third-party cover-image origin (MDX) — faster TLS + DNS for LCP. */}
+        <link
+          rel="preconnect"
+          href="https://gameistan.com.pk"
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href="https://gameistan.com.pk" />
+      </head>
       <body
         className={`${syne.variable} ${dmSans.variable} ${jetbrains.variable} flex min-h-full flex-col font-sans`}
       >

@@ -126,6 +126,12 @@ export default async function GameDetailPage({
             dateModified: game.updatedAt,
             author: { "@type": "Organization", name: siteConfig.name },
             publisher: { "@type": "Organization", name: siteConfig.name },
+            image: [absoluteUrl(game.coverImage)],
+            url: absoluteUrl(game.url),
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": absoluteUrl(game.url),
+            },
           }}
         />
         <Breadcrumb items={crumbs} />
@@ -148,7 +154,7 @@ export default async function GameDetailPage({
         {game.screenshots.length > 0 ? (
           <section className="space-y-3">
             <h2 className="font-display text-xl font-bold text-text">Screenshots</h2>
-            <ScreenshotGallery urls={game.screenshots} />
+            <ScreenshotGallery urls={game.screenshots} productTitle={game.title} />
           </section>
         ) : null}
         <InstallSteps steps={game.installSteps} />

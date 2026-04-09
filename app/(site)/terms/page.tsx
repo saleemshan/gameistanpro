@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
-import { JsonLd } from "@/components/seo/JsonLd";
-import { absoluteUrl, siteConfig } from "@/lib/seo";
+import { absoluteUrl, getContactEmail, siteConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Terms & conditions",
@@ -12,14 +11,6 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <article className="mx-auto max-w-3xl space-y-6">
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: siteConfig.name,
-          url: absoluteUrl("/"),
-        }}
-      />
       <h1 className="font-display text-3xl font-bold text-text">
         Terms &amp; conditions
       </h1>
@@ -35,7 +26,7 @@ export default function TermsPage() {
         </p>
         <p>
           <strong className="text-text">DMCA:</strong> rights holders may request removal of
-          allegedly infringing references via legal@yourdomain.com with substantiation.
+          allegedly infringing references via {getContactEmail()} with substantiation.
         </p>
       </div>
     </article>
