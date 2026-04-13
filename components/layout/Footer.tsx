@@ -7,6 +7,7 @@ const footerLinks = [
   { href: "/apps", label: "Apps & tools" },
   { href: "/games", label: "Games" },
   { href: "/guides", label: "Guides" },
+  { href: "/about", label: "About" },
   { href: "/categories/casino-games", label: "Casino games" },
   { href: "/categories/tools", label: "Tools" },
   { href: "/disclaimer", label: "Disclaimer" },
@@ -43,7 +44,7 @@ export function Footer() {
               Explore
             </p>
             <ul className="space-y-2 text-sm">
-              {footerLinks.slice(0, 4).map((l) => (
+              {footerLinks.slice(0, 5).map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className="text-text-muted hover:text-accent">
                     {l.label}
@@ -57,7 +58,7 @@ export function Footer() {
               Legal
             </p>
             <ul className="space-y-2 text-sm">
-              {footerLinks.slice(4).map((l) => (
+              {footerLinks.slice(5).map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className="text-text-muted hover:text-accent">
                     {l.label}

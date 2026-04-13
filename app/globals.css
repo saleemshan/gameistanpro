@@ -40,6 +40,49 @@
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 }
 
+/* MDX bodies (games/apps/guides): pipe tables need remark-gfm + these rules */
+.detail-mdx {
+  overflow-x: auto;
+}
+
+.detail-mdx :where(table) {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: min(100%, 72ch);
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  table-layout: fixed;
+}
+
+.detail-mdx :where(thead th, tbody td) {
+  border: 1px solid var(--border-subtle);
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+.detail-mdx :where(thead th) {
+  background: var(--bg-card);
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.detail-mdx :where(tbody td) {
+  color: var(--text-muted);
+}
+
+.detail-mdx :where(tbody tr:nth-child(even) td) {
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.light .detail-mdx :where(tbody tr:nth-child(even) td) {
+  background: rgba(15, 23, 42, 0.05);
+}
+
 @layer base {
   html {
     @apply scroll-smooth;

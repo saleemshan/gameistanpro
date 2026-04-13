@@ -241,3 +241,44 @@ export function getRelatedGuides(guide: Guide, limit = 3): Guide[] {
     )
     .slice(0, limit);
 }
+
+const GUIDE_SLUGS_FOR_GAME_PAGES = [
+  "jazzcash-easypaisa-gaming-withdrawals",
+  "safe-apk-download-pakistan",
+  "fake-casino-apps-pakistan",
+  "best-earning-games-pakistan-2026",
+  "color-prediction-apps-pakistan",
+  "earning-games-without-investment-pakistan",
+] as const;
+
+/** Guides to surface on game detail pages: wallet/safety hubs + tag overlap. */
+export function getGuidesForGame(game: Game, limit = 3): Guide[] {
+  const gameTags = new Set(
+    game.tags.map((t) => t.toLowerCase().trim()).filter(Boolean),
+  );
+  const scored = getAllGuides().map((g) => {
+    let score = 0;
+    if ((GUIDE_SLUGS_FOR_GAME_PAGES as readonly string[]).includes(g.slug))
+      score += 2;
+    for (const t of g.tags) {
+      if (gameTags.has(t.toLowerCase().trim())) score += 4;
+    }
+    return { g, score };
+  });
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return (
+      new Date(b.g.updatedAt).getTime() - new Date(a.g.updatedAt).getTime()
+    );
+  });
+  const out: Guide[] = [];
+  const seen = new Set<string>();
+  for (const { g } of scored) {
+    if (seen.has(g.slug)) continue;
+    if (g.slug === game.slug) continue;
+    seen.add(g.slug);
+    out.push(g);
+    if (out.length >= limit) break;
+  }
+  return out;
+}

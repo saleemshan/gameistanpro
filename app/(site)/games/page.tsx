@@ -57,19 +57,20 @@ export async function generateMetadata({
   // SEO FIX: Explicit self-canonical for every facet + page (never inherit root "/").
   const path = buildListingSearchPath("/games", { category: cat, sort, page });
   const canonical = absoluteUrl(path);
+  const gameCount = getAllGames().length;
   const title =
     page > 1
       ? `Casino & earning games Pakistan – Page ${page}`
       : cat
         ? `${GAME_LABELS[cat as (typeof GAME_CATS)[number]]} casino & earning games Pakistan – APKs 2026`
         : "Casino & real earning games in Pakistan – download & play 2026";
+  const description = `Browse ${gameCount}+ reviewed casino, colour prediction, and card-room APKs for Pakistan—filters, sort, and self-canonical listings.`;
   return {
     title,
-    description:
-      "Casino APKs, colour prediction titles, and card-room apps reviewed for Pakistani Android users.",
+    description,
     alternates: { canonical },
     robots: page > 1 ? { index: false, follow: true } : { index: true, follow: true },
-    openGraph: { title, url: canonical },
+    openGraph: { title, description, url: canonical },
   };
 }
 

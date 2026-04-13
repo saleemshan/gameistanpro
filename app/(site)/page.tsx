@@ -15,7 +15,7 @@ import { absoluteUrl, getSiteUrl, siteConfig } from "@/lib/seo";
 export const revalidate = 60;
 
 const homeDescription =
-  "Browse paginated PK real-money games: color prediction & casino APKs, ratings, versions, and JazzCash / EasyPaisa-friendly guides. Independent Pakistan-focused reviews and safe install tips for 2026.";
+  "Browse real-money earning games in Pakistan: color prediction, casino APKs, JazzCash & EasyPaisa guides, ratings, versions, and safe install tips. Independent PKR-focused reviews for 2026.";
 
 const homeKeywords = [
   "earning games Pakistan",
@@ -52,13 +52,13 @@ export async function generateMetadata({
   const path = homeCanonicalPath(page);
   const canonical = absoluteUrl(path);
 
-  const title =
+  const titleAbsolute =
     page > 1
       ? `${siteConfig.defaultTitle} — Page ${page}`
       : siteConfig.defaultTitle;
 
   return {
-    title,
+    title: { absolute: titleAbsolute },
     description: homeDescription,
     keywords: [...homeKeywords],
     robots: { index: true, follow: true },
@@ -72,7 +72,7 @@ export async function generateMetadata({
         : {}),
     },
     openGraph: {
-      title,
+      title: titleAbsolute,
       description: homeDescription,
       url: canonical,
       type: "website",
@@ -82,7 +82,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: titleAbsolute,
       description: homeDescription,
       images: ["/api/og?title=Gameistan+Pro"],
     },

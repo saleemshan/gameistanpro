@@ -34,15 +34,16 @@ export async function generateMetadata({
   // SEO FIX: Faceted /guides?category= must self-canonicalize, not always /guides.
   const path = buildListingSearchPath("/guides", { category: cat });
   const canonical = absoluteUrl(path);
+  const guideCount = getAllGuides().length;
   const title = cat
     ? `${GUIDE_CAT_LABEL[cat]} gaming guides – Pakistan APK & casino tips`
     : "Gaming guides & casino tips for Pakistani players";
+  const description = `${guideCount} editorial guides: APK safety, fake-app signals, JazzCash / EasyPaisa flows, and seasonal promos for Pakistani Android users.`;
   return {
     title,
-    description:
-      "How-tos, security explainers, and wallet tips for APK sideloading in Pakistan.",
+    description,
     alternates: { canonical },
-    openGraph: { title, url: canonical },
+    openGraph: { title, description, url: canonical },
   };
 }
 

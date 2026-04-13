@@ -9,12 +9,15 @@ export function AppHero({
   shortDescription,
   rating,
   votes,
+  downloadHref,
 }: {
   title: string;
   coverImage: string;
   shortDescription: string;
   rating: number;
   votes: number;
+  /** First HTTPS mirror — hero button links here when present. */
+  downloadHref?: string | null;
 }) {
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
@@ -40,8 +43,16 @@ export function AppHero({
           className="justify-center lg:justify-start"
         />
         <p className="text-pretty text-lg text-text-muted">{shortDescription}</p>
-        <div className="flex justify-center lg:justify-start">
-          <DownloadButton />
+        <div className="flex flex-col items-center gap-2 sm:items-start">
+          <DownloadButton href={downloadHref} />
+          {downloadHref ? (
+            <a
+              href="#download"
+              className="text-sm text-accent underline-offset-2 hover:underline"
+            >
+              More mirrors &amp; file checks
+            </a>
+          ) : null}
         </div>
       </div>
     </div>

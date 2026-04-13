@@ -4,6 +4,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 
 const MIN_VOTES_FOR_AGGREGATE_RATING = 5;
 const MAX_SCREENSHOTS = 8;
+const BEST_RATING = 5;
+const WORST_RATING = 1;
 
 function toIsoDate(d: string | Date | undefined): string | undefined {
   if (d == null) return undefined;
@@ -25,6 +27,28 @@ function appCategoryToSchema(category: string): string {
   }
 }
 
+/** Google-rich-result-safe aggregate: numeric bounds, positive integer count, single parent @type. */
+function buildAggregateRatingBlock(
+  rating: number,
+  votes: number,
+): Record<string, unknown> | null {
+  const voteInt = Math.floor(Number(votes));
+  if (!Number.isFinite(voteInt) || voteInt < MIN_VOTES_FOR_AGGREGATE_RATING) {
+    return null;
+  }
+  let rv = Number(rating);
+  if (!Number.isFinite(rv)) return null;
+  rv = Math.min(BEST_RATING, Math.max(WORST_RATING, rv));
+  const rounded = Math.round(rv * 10) / 10;
+  return {
+    "@type": "AggregateRating",
+    ratingValue: rounded,
+    bestRating: BEST_RATING,
+    worstRating: WORST_RATING,
+    ratingCount: Math.max(1, voteInt),
+  };
+}
+
 export function SoftwareApplicationJsonLd({
   name,
   description,
@@ -35,6 +59,7 @@ export function SoftwareApplicationJsonLd({
   coverImage,
   screenshots = [],
   softwareVersion,
+  fileSize,
   datePublished,
   dateModified,
   tags = [],
@@ -49,6 +74,8 @@ export function SoftwareApplicationJsonLd({
   coverImage?: string;
   screenshots?: string[];
   softwareVersion?: string;
+  /** Human-readable size from listing (e.g. `25MB`). */
+  fileSize?: string;
   datePublished?: string | Date;
   dateModified?: string | Date;
   tags?: string[];
@@ -75,11 +102,10 @@ export function SoftwareApplicationJsonLd({
       ? "GameApplication"
       : appCategoryToSchema(categoryKey ?? "apps");
 
-  // SEO FIX: Omit aggregateRating when vote count is too low for Google rich-result eligibility.
+  // SEO FIX: Single concrete @type (no array) — avoids GSC treating aggregateRating like orphan Review snippets (itemReviewed errors).
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
-    "@type":
-      kind === "game" ? (["SoftwareApplication", "VideoGame"] as const) : "SoftwareApplication",
+    "@type": kind === "game" ? "MobileApplication" : "SoftwareApplication",
     name,
     operatingSystem: "Android",
     applicationCategory,
@@ -96,17 +122,13 @@ export function SoftwareApplicationJsonLd({
   if (coverImage) data.image = absoluteUrl(coverImage);
   if (shotUrls.length) data.screenshot = shotUrls;
   if (softwareVersion) data.softwareVersion = softwareVersion;
+  if (fileSize?.trim()) data.fileSize = fileSize.trim();
   if (published) data.datePublished = published;
   if (modified) data.dateModified = modified;
   if (keywords) data.keywords = keywords;
 
-  if (votes >= MIN_VOTES_FOR_AGGREGATE_RATING) {
-    data.aggregateRating = {
-      "@type": "AggregateRating",
-      ratingValue: String(rating),
-      ratingCount: String(votes),
-    };
-  }
+  const agg = buildAggregateRatingBlock(rating, votes);
+  if (agg) data.aggregateRating = agg;
 
   return <JsonLd data={data} />;
 }

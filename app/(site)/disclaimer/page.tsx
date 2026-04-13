@@ -25,6 +25,20 @@ export default function DisclaimerPage() {
           Laws around online betting and casino-style apps vary in Pakistan and may change. You are
           responsible for compliance with local regulations before installing or funding any app.
         </p>
+        <section className="space-y-2">
+          <h2 className="font-display text-xl font-semibold text-text">Editorial accuracy</h2>
+          <p>
+            Version, size, and mirror fields are editorial snapshots. They can drift from live
+            publisher builds. Always verify after download and before transferring PKR.
+          </p>
+        </section>
+        <section className="space-y-2">
+          <h2 className="font-display text-xl font-semibold text-text">Third-party links</h2>
+          <p>
+            Outbound mirrors and screenshots may point to domains we do not control. Their terms and
+            privacy policies apply when you leave this site.
+          </p>
+        </section>
         <p>Contact: {getContactEmail()}</p>
       </div>
     </article>

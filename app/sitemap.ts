@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/apps`, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/games`, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/guides`, changeFrequency: "weekly", priority: 0.85 },
+    { url: `${base}/about`, changeFrequency: "yearly", priority: 0.55 },
     { url: `${base}/disclaimer`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${base}/privacy-policy`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${base}/terms`, changeFrequency: "yearly", priority: 0.3 },

@@ -9,10 +9,13 @@ function clampRating(r: number): number {
 export function StarRating({
   rating,
   votes,
+  hideVotes,
   className,
 }: {
   rating: number;
   votes: number;
+  /** When true, omit aggregate vote label (e.g. single reader quotes). */
+  hideVotes?: boolean;
   className?: string;
 }) {
   const r = clampRating(rating);
@@ -21,14 +24,7 @@ export function StarRating({
   const empty = 5 - full - half;
 
   return (
-    <div
-      className={cn("flex flex-wrap items-center gap-1.5", className)}
-      itemScope
-      itemType="https://schema.org/AggregateRating"
-    >
-      <meta itemProp="ratingValue" content={String(r)} />
-      <meta itemProp="bestRating" content="5" />
-      <meta itemProp="ratingCount" content={String(votes)} />
+    <div className={cn("flex flex-wrap items-center gap-1.5", className)}>
       <span className="flex text-gold" aria-hidden>
         {Array.from({ length: full }).map((_, i) => (
           <Star key={`f-${i}`} className="size-4 fill-current" />
@@ -41,10 +37,15 @@ export function StarRating({
         ))}
       </span>
       <span className="font-mono text-sm text-text">
-        {r.toFixed(1)}{" "}
-        <span className="text-text-muted">
-          ({votes.toLocaleString("en-PK")} votes)
-        </span>
+        {r.toFixed(1)}
+        {hideVotes ? null : (
+          <>
+            {" "}
+            <span className="text-text-muted">
+              ({votes.toLocaleString("en-PK")} votes)
+            </span>
+          </>
+        )}
       </span>
     </div>
   );

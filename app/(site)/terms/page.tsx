@@ -28,6 +28,21 @@ export default function TermsPage() {
           <strong className="text-text">DMCA:</strong> rights holders may request removal of
           allegedly infringing references via {getContactEmail()} with substantiation.
         </p>
+        <section className="space-y-2">
+          <h2 className="font-display text-xl font-semibold text-text">Limitation of liability</h2>
+          <p>
+            {siteConfig.name} is provided “as is.” We are not liable for losses arising from
+            third-party software you install, wallet transactions you initiate, or decisions based
+            on editorial content.
+          </p>
+        </section>
+        <section className="space-y-2">
+          <h2 className="font-display text-xl font-semibold text-text">Acceptable use</h2>
+          <p>
+            Do not attempt to disrupt the site, scrape it in ways that degrade service for others,
+            or misrepresent editorial pages as official publisher support channels.
+          </p>
+        </section>
       </div>
     </article>
   );

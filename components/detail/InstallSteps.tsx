@@ -4,15 +4,22 @@ import { JsonLd } from "@/components/seo/JsonLd";
 
 export function InstallSteps({
   steps,
+  productTitle,
 }: {
   steps: { title: string; description: string }[];
+  /** When set, HowTo JSON-LD name is specific to this product (better intent match). */
+  productTitle?: string;
 }) {
   if (!steps.length) return null;
+
+  const howToName = productTitle?.trim()
+    ? `How to install ${productTitle.trim()} on Android`
+    : "Install steps";
 
   const howTo = {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    name: "Install steps",
+    name: howToName,
     step: steps.map((s, i) => ({
       "@type": "HowToStep",
       position: i + 1,
@@ -26,7 +33,9 @@ export function InstallSteps({
       <JsonLd data={howTo} />
       <h2 className="flex items-center gap-2 font-display text-xl font-bold text-text">
         <ListOrdered className="size-5 text-accent" />
-        Install steps
+        {productTitle?.trim()
+          ? `How to install ${productTitle.trim()}`
+          : "Install steps"}
       </h2>
       <ol className="space-y-4">
         {steps.map((s, i) => (

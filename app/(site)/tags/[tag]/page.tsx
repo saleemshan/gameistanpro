@@ -25,14 +25,27 @@ export async function generateMetadata({
   if (!name) return { title: "Tag" };
   const items = getItemsByTagSlug(tag);
   const title = `Tagged: ${name} – apps, games & guides`;
+  const canonical = absoluteUrl(`/tags/${tag}`);
+  const description = `Listings tagged “${name}” for Pakistani players browsing APKs and guides.`;
   return {
     title,
-    description: `Listings tagged “${name}” for Pakistani players browsing APKs and guides.`,
-    alternates: { canonical: absoluteUrl(`/tags/${tag}`) },
+    description,
+    alternates: { canonical },
     robots:
       items.length < 3
         ? { index: false, follow: true }
         : { index: true, follow: true },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 

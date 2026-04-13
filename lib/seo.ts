@@ -4,12 +4,67 @@ const PRODUCTION_FALLBACK_ORIGIN = "https://gameistan.com.pk";
 export const siteConfig = {
   name: "Gameistan Pro",
   shortName: "Gameistan Pro",
+  /** Full `<title>` / OG default — includes brand once. Child routes use `title.absolute` or template segment without brand. */
   defaultTitle:
-    "Best Real Cash Earning Games & APK Downloads in Pakistan | Gameistan Pro",
+    "Best Real Earning Games in Pakistan 2026 — APK Downloads & Reviews | Gameistan Pro",
   description:
     "Independent guides to real-money earning games in Pakistan—color prediction & casino APKs, JazzCash / EasyPaisa context, safe installs, and PKR-focused reviews.",
   locale: "en_PK",
 } as const;
+
+/** Calendar year for metadata freshness (not app version data). */
+export function getMetadataYear(now = new Date()): number {
+  return now.getFullYear();
+}
+
+/** True if listing text mentions JazzCash / EasyPaisa (editorial + body, not invented). */
+export function textMentionsPakistanWallets(text: string): boolean {
+  return /jazz\s*cash|easypaisa|easy\s*paisa/i.test(text);
+}
+
+type GameMetaFields = {
+  title: string;
+  shortDescription: string;
+  description: string;
+  category: string;
+  version: string;
+  size: string;
+  requirements: string;
+  body?: { raw: string };
+};
+
+export function buildGameMetaTitle(game: GameMetaFields): string {
+  const y = getMetadataYear();
+  return `${game.title} APK Download Pakistan ${y} — Review & Install Guide`;
+}
+
+export function buildGameMetaDescription(game: GameMetaFields): string {
+  const raw = `${game.shortDescription}\n${game.description}\n${game.body?.raw ?? ""}`;
+  const wallets = textMentionsPakistanWallets(raw);
+  const cat =
+    game.category === "casino-games"
+      ? "Casino"
+      : game.category === "color-prediction"
+        ? "Color prediction"
+        : game.category === "sports-betting"
+          ? "Sports betting"
+          : "Card-room";
+  const walletClause = wallets
+    ? " JazzCash / EasyPaisa withdrawal context where noted in our review."
+    : " Wallet and withdrawal steps vary by publisher—confirm in-app.";
+  return `Download ${game.title} for Android (${game.version}, ${game.size}, ${game.requirements}). ${cat} APK review with install steps,${walletClause} Safety tips for Pakistan.`;
+}
+
+type AppMetaFields = Pick<GameMetaFields, "title" | "shortDescription">;
+
+export function buildAppMetaTitle(app: AppMetaFields): string {
+  const y = getMetadataYear();
+  return `${app.title} APK Download Pakistan ${y} — Tools & Utilities`;
+}
+
+export function buildAppMetaDescription(app: AppMetaFields): string {
+  return `${app.shortDescription} Version and size on page are from our listing metadata—verify after download before install.`;
+}
 
 /** Relative path for default OG image (composed with metadataBase). */
 export function getDefaultOgImagePath(): string {

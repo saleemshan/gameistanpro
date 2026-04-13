@@ -4,6 +4,7 @@ import {
   makeSource,
 } from "contentlayer2/source-files";
 import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
 
 const FaqNested = defineNestedType(() => ({
   name: "FaqItem",
@@ -18,6 +19,17 @@ const InstallStepNested = defineNestedType(() => ({
   fields: {
     title: { type: "string", required: true },
     description: { type: "string", required: true },
+  },
+}));
+
+/** Short player-style notes shown on game pages (optional per MDX). */
+const PlayerReviewNested = defineNestedType(() => ({
+  name: "PlayerReviewItem",
+  fields: {
+    name: { type: "string", required: true },
+    place: { type: "string", required: false },
+    rating: { type: "number", required: true },
+    text: { type: "string", required: true },
   },
 }));
 
@@ -94,6 +106,7 @@ export const Game = defineDocumentType(() => ({
     views: { type: "number", default: 0 },
     faqs: { type: "list", of: FaqNested, default: [] },
     installSteps: { type: "list", of: InstallStepNested, default: [] },
+    playerReviews: { type: "list", of: PlayerReviewNested, default: [] },
   },
   computedFields: {
     url: { type: "string", resolve: (doc) => `/${doc.slug}` },
@@ -120,6 +133,7 @@ export const Guide = defineDocumentType(() => ({
     coverImage: { type: "string", required: true },
     tags: { type: "list", of: { type: "string" }, default: [] },
     featured: { type: "boolean", default: false },
+    faqs: { type: "list", of: FaqNested, default: [] },
   },
   computedFields: {
     url: { type: "string", resolve: (doc) => `/guides/${doc.slug}` },
@@ -139,6 +153,8 @@ export default makeSource({
   documentTypes: [App, Game, Guide],
   disableImportAliasWarning: true,
   mdx: {
+    // GFM pipe tables (Pros | Cons), strikethrough, autolinks, etc.
+    remarkPlugins: [remarkGfm],
     rehypePlugins: [rehypeSlug],
   },
 });

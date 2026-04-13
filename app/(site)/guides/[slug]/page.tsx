@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { GuideMDX } from "@/components/guides/GuideMDX";
+import { FAQSection } from "@/components/detail/FAQSection";
 import { ShareButtons } from "@/components/detail/ShareButtons";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
+import { FAQPageJsonLd } from "@/components/seo/FAQPageJsonLd";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getAllGuides, getGuideBySlug, getRelatedGuides } from "@/lib/content";
 import { extractTocFromMarkdown } from "@/lib/guide-toc";
-import { absoluteUrl, siteConfig } from "@/lib/seo";
+import { absoluteUrl, getMetadataYear, siteConfig } from "@/lib/seo";
 import { formatPkDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,20 +30,24 @@ export async function generateMetadata({
   const guide = getGuideBySlug(slug);
   if (!guide) return { title: "Not found" };
   const path = `/guides/${slug}`;
+  const y = getMetadataYear();
+  const title = `${guide.title} (${y})`;
   return {
-    title: guide.title,
+    title,
     description: guide.description,
     alternates: { canonical: absoluteUrl(path) },
     openGraph: {
-      title: guide.title,
+      title,
       description: guide.description,
       url: absoluteUrl(path),
       images: [{ url: guide.coverImage, width: 1200, height: 630 }],
       type: "article",
+      publishedTime: new Date(guide.publishedAt).toISOString(),
+      modifiedTime: new Date(guide.updatedAt).toISOString(),
     },
     twitter: {
       card: "summary_large_image",
-      title: guide.title,
+      title,
       description: guide.description,
     },
   };
@@ -80,6 +86,7 @@ export default async function GuideDetailPage({
           { name: guide.title, href: guide.url },
         ]}
       />
+      <FAQPageJsonLd faqs={guide.faqs} />
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -112,7 +119,8 @@ export default async function GuideDetailPage({
         </div>
         <header className="space-y-2">
           <p className="text-sm text-text-muted">
-            {formatPkDate(guide.publishedAt)} · {guide.readingTime} min read ·{" "}
+            Published {formatPkDate(guide.publishedAt)} · Last updated{" "}
+            {formatPkDate(guide.updatedAt)} · {guide.readingTime} min read ·{" "}
             {guide.author}
           </p>
           <h1 className="font-display text-3xl font-bold text-text md:text-4xl">
@@ -122,6 +130,7 @@ export default async function GuideDetailPage({
         </header>
         <ShareButtons urlPath={guide.url} title={guide.title} />
         <GuideMDX code={guide.body.code} />
+        <FAQSection faqs={guide.faqs} />
         {related.length > 0 ? (
           <section className="space-y-3">
             <h2 className="font-display text-xl font-bold text-text">

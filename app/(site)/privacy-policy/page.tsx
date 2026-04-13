@@ -41,6 +41,20 @@ export default function PrivacyPage() {
           {/* SEO FIX: Operational inbox from env (NEXT_PUBLIC_CONTACT_EMAIL) with sensible fallback. */}
           <p>{getContactEmail()}</p>
         </section>
+        <section>
+          <h2 className="font-display text-xl font-semibold text-text">Children</h2>
+          <p>
+            Content is aimed at adults (18+). We do not knowingly collect personal information from
+            minors.
+          </p>
+        </section>
+        <section>
+          <h2 className="font-display text-xl font-semibold text-text">Changes</h2>
+          <p>
+            We may update this policy when analytics vendors or hosting features change. The “Last
+            updated” date at the top reflects the latest editorial pass.
+          </p>
+        </section>
       </div>
     </article>
   );

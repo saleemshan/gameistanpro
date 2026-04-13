@@ -18,7 +18,12 @@ import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { FAQPageJsonLd } from "@/components/seo/FAQPageJsonLd";
 import { appToCardModel } from "@/lib/card-mappers";
 import { getAllApps, getAppBySlug, getRelatedApps } from "@/lib/content";
-import { absoluteUrl, siteConfig } from "@/lib/seo";
+import {
+  absoluteUrl,
+  buildAppMetaDescription,
+  buildAppMetaTitle,
+} from "@/lib/seo";
+import { getPrimaryDownloadUrl } from "@/lib/download-links";
 import { formatPkDate } from "@/lib/utils";
 
 export const revalidate = 86400;
@@ -36,14 +41,15 @@ export async function generateMetadata({
   const app = getAppBySlug(slug);
   if (!app) return { title: "Not found" };
   const path = `/apps/${slug}`;
-  const title = `${app.title} download APK – tools for Pakistan | ${siteConfig.name}`;
+  const title = buildAppMetaTitle(app);
+  const description = buildAppMetaDescription(app);
   return {
     title,
-    description: app.shortDescription,
+    description,
     alternates: { canonical: absoluteUrl(path) },
     openGraph: {
-      title: app.title,
-      description: app.shortDescription,
+      title,
+      description,
       url: absoluteUrl(path),
       images: [
         {
@@ -52,12 +58,12 @@ export async function generateMetadata({
           height: 630,
         },
       ],
-      type: "website",
+      type: "article",
     },
     twitter: {
       card: "summary_large_image",
-      title: app.title,
-      description: app.shortDescription,
+      title,
+      description,
     },
   };
 }
@@ -78,6 +84,7 @@ export default async function AppDetailPage({
   ];
 
   const related = getRelatedApps(app).map(appToCardModel);
+  const downloadHref = getPrimaryDownloadUrl(app.downloadLinks);
 
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_280px]">
@@ -99,6 +106,7 @@ export default async function AppDetailPage({
           coverImage={app.coverImage}
           screenshots={app.screenshots}
           softwareVersion={app.version}
+          fileSize={app.size}
           datePublished={app.publishedAt}
           dateModified={app.updatedAt}
           tags={app.tags}
@@ -112,6 +120,7 @@ export default async function AppDetailPage({
           shortDescription={app.shortDescription}
           rating={app.rating}
           votes={app.votes}
+          downloadHref={downloadHref}
         />
         <AppMetaBox
           size={app.size}
@@ -127,7 +136,7 @@ export default async function AppDetailPage({
             <ScreenshotGallery urls={app.screenshots} productTitle={app.title} />
           </section>
         ) : null}
-        <InstallSteps steps={app.installSteps} />
+        <InstallSteps productTitle={app.title} steps={app.installSteps} />
         <section className="space-y-3">
           <h2 className="font-display text-xl font-bold text-text">Tags</h2>
           <TagList tags={app.tags} />

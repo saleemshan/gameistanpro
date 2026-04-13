@@ -10,10 +10,16 @@ export function FAQSection({
 }) {
   if (!faqs.length) return null;
 
+  const defaultOpen = faqs.map((_, i) => `faq-${i}`);
+
   return (
     <section className="space-y-4">
       <h2 className="font-display text-xl font-bold text-text">FAQ</h2>
-      <Accordion.Root type="single" collapsible className="space-y-2">
+      <Accordion.Root
+        type="multiple"
+        defaultValue={defaultOpen}
+        className="space-y-2"
+      >
         {faqs.map((f, i) => (
           <Accordion.Item
             key={i}
