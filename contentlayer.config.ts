@@ -6,6 +6,8 @@ import {
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 
+import { remarkStripEmbeddedFaq } from "./lib/remark-strip-embedded-faq";
+
 const FaqNested = defineNestedType(() => ({
   name: "FaqItem",
   fields: {
@@ -154,7 +156,7 @@ export default makeSource({
   disableImportAliasWarning: true,
   mdx: {
     // GFM pipe tables (Pros | Cons), strikethrough, autolinks, etc.
-    remarkPlugins: [remarkGfm],
+    remarkPlugins: [remarkGfm, remarkStripEmbeddedFaq],
     rehypePlugins: [rehypeSlug],
   },
 });

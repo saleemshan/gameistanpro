@@ -33,7 +33,7 @@ export function HomeFeaturedGamesSection({ page }: { page: number }) {
 
   return (
     <section
-      className="space-y-4"
+      className="rounded-3xl border border-border-subtle bg-bg-card/30 px-5 py-10 backdrop-blur-md sm:px-8 md:py-12"
       aria-labelledby="home-games-heading"
       id="home-games"
     >
@@ -42,14 +42,15 @@ export function HomeFeaturedGamesSection({ page }: { page: number }) {
         <div className="max-w-2xl space-y-2">
           <h2
             id="home-games-heading"
-            className="font-display text-2xl font-bold text-text"
+            className="font-display text-2xl font-bold tracking-tight text-text md:text-3xl"
           >
-            Top earning &amp; casino games in Pakistan (2026)
+            Top earning &amp; casino games in Pakistan
           </h2>
           <p className="text-pretty text-sm leading-relaxed text-text-muted md:text-base">
-            Hand-picked color-prediction and casino-style APKs with version, size,
-            and rating metadata—updated for PK players comparing JazzCash-friendly
-            platforms and safe sideload habits.
+            Each card shows downloads, size, and version from our listing metadata—tap{" "}
+            <strong className="font-medium text-text">Review</strong> for the full write-up or{" "}
+            <strong className="font-medium text-text">Download</strong> to jump straight to
+            mirrors.
           </p>
           {total > 0 ? (
             <p className="text-xs text-text-muted">
@@ -62,31 +63,32 @@ export function HomeFeaturedGamesSection({ page }: { page: number }) {
                 <>
                   {" "}
                   · page{" "}
-                  <span className="tabular-nums text-text/90">{currentPage}</span>{" "}
-                  of{" "}
+                  <span className="tabular-nums text-text/90">{currentPage}</span> of{" "}
                   <span className="tabular-nums text-text/90">{totalPages}</span>
                 </>
               ) : null}
             </p>
           ) : null}
         </div>
-        <Button asChild variant="ghost">
-          <Link href="/games">Browse all games</Link>
+        <Button asChild variant="outline" className="font-display">
+          <Link href="/games">View all games</Link>
         </Button>
       </div>
-      {cards.length ? (
-        <AppGrid items={cards} />
-      ) : (
-        <p className="rounded-xl border border-border-subtle bg-bg-card/40 p-6 text-sm text-text-muted">
-          No games published yet. Check back soon.
-        </p>
-      )}
+      <div className="mt-8">
+        {cards.length ? (
+          <AppGrid items={cards} />
+        ) : (
+          <p className="rounded-xl border border-border-subtle bg-bg-deep/40 p-6 text-sm text-text-muted">
+            No games published yet. Check back soon.
+          </p>
+        )}
+      </div>
       <Pagination
         pathname="/"
         page={currentPage}
         totalPages={totalPages}
         scrollAnchor="home-games"
-        className="pt-2"
+        className="pt-6"
       />
     </section>
   );

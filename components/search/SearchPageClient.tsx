@@ -17,8 +17,15 @@ const fuseOptions: ConstructorParameters<typeof Fuse<SearchableItem>>[1] = {
   ignoreLocation: true,
 };
 
-export function SearchPageClient({ items }: { items: SearchableItem[] }) {
-  const [query, setQuery] = useState("");
+export function SearchPageClient({
+  items,
+  initialQuery = "",
+}: {
+  items: SearchableItem[];
+  /** From server `searchParams` so `/search?q=` from the hero form hydrates without effects. */
+  initialQuery?: string;
+}) {
+  const [query, setQuery] = useState(initialQuery);
   const deferred = useDeferredValue(query);
 
   const fuse = useMemo(

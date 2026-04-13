@@ -25,15 +25,19 @@ const items = [
 
 export function WhyChooseSection() {
   return (
-    <section className="space-y-6">
-      <h2 className="font-display text-2xl font-bold text-text">
+    <section className="rounded-3xl border border-border-subtle bg-bg-card/25 px-5 py-10 backdrop-blur-md sm:px-8 md:py-12">
+      <h2 className="font-display text-2xl font-bold tracking-tight text-text md:text-3xl">
         Why players choose us
       </h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <p className="mt-2 max-w-2xl text-sm text-text-muted md:text-base">
+        Editorial tooling built for Pakistan: structured metadata, internal guides, and no
+        pay-to-rank listings.
+      </p>
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {items.map(({ icon: Icon, title, body }) => (
           <div
             key={title}
-            className="rounded-xl border border-border-subtle bg-bg-card/50 p-5 backdrop-blur-sm"
+            className="rounded-2xl border border-border-subtle bg-bg-deep/35 p-5 backdrop-blur-sm transition hover:border-accent/30"
           >
             <Icon className="mb-3 size-8 text-accent" aria-hidden />
             <h3 className="font-display font-semibold text-text">{title}</h3>

@@ -1,12 +1,15 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { motion } from "framer-motion";
+import { ArrowRight, Download } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { NewBadge } from "@/components/ui/NewBadge";
 import { VersionBadge } from "@/components/ui/VersionBadge";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/button";
 import { StarRating } from "@/components/listing/StarRating";
 import { formatPkDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -17,11 +20,17 @@ export type AppCardModel = {
   coverImage: string;
   version: string;
   publishedAt: string;
+  updatedAt?: string;
   category: string;
   rating: number;
   votes: number;
   isNew?: boolean;
   featured?: boolean;
+  shortDescription?: string;
+  size?: string;
+  downloads?: string;
+  /** First HTTPS/HTTP mirror — card Download opens this in a new tab when set. */
+  directDownloadUrl?: string | null;
 };
 
 const categoryLabels: Record<string, string> = {
@@ -35,6 +44,26 @@ const categoryLabels: Record<string, string> = {
   "card-games": "Cards",
 };
 
+function MetaChip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center rounded-lg border border-border-subtle/80 bg-bg-deep/60 px-2.5 py-1 text-[11px] font-medium text-text-muted backdrop-blur-sm">
+      {children}
+    </span>
+  );
+}
+
+function StatusLine({ item }: { item: AppCardModel }) {
+  if (item.updatedAt)
+    return (
+      <span className="text-[11px] text-text-muted">
+        Updated {formatPkDate(item.updatedAt)}
+      </span>
+    );
+  return (
+    <span className="text-[11px] text-text-muted">Listed {formatPkDate(item.publishedAt)}</span>
+  );
+}
+
 export function AppCard({
   item,
   index = 0,
@@ -47,81 +76,167 @@ export function AppCard({
   const label =
     categoryLabels[item.category] ?? item.category.replace(/-/g, " ");
 
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.35 }}
-      className={cn(
-        "group relative flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-bg-card/60 shadow-lg backdrop-blur-md transition",
-        "hover:-translate-y-1 hover:border-accent/35 hover:shadow-[0_0_24px_rgba(0,255,136,0.12)]",
-      )}
-    >
-      <Link
-        href={item.href}
-        className={cn(
-          "flex min-h-0 flex-1 outline-none transition",
-          compact ? "flex-row gap-3 p-3" : "flex-col",
-        )}
+  if (compact) {
+    return (
+      <motion.article
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.04, duration: 0.3 }}
+        className="flex gap-3 rounded-xl border border-border-subtle bg-bg-card/50 p-3 backdrop-blur-sm"
       >
-        {item.isNew ? <NewBadge /> : null}
-        <div
-          className={cn(
-            "relative shrink-0 overflow-hidden bg-bg-deep/80",
-            compact ? "size-[75px] rounded-lg" : "aspect-[16/10] w-full",
-          )}
-        >
+        <Link href={item.href} className="relative size-16 shrink-0 overflow-hidden rounded-lg">
           <Image
             src={item.coverImage}
             alt={item.title}
-            width={compact ? 75 : 400}
-            height={compact ? 75 : 250}
-            className={cn(
-              "object-cover transition duration-500 group-hover:scale-105",
-              compact ? "size-[75px]" : "h-full w-full",
-            )}
-            sizes={compact ? "75px" : "(max-width:768px) 100vw, 33vw"}
+            width={64}
+            height={64}
+            className="size-full object-cover"
+            sizes="64px"
           />
-          {item.featured ? (
-            <span className="absolute bottom-2 right-2 rounded bg-gold/90 px-1.5 py-0.5 text-[10px] font-bold text-bg-deep">
-              Featured
-            </span>
-          ) : null}
-        </div>
-        <div className={cn("flex flex-1 flex-col gap-2", compact ? "py-0.5" : "p-4")}>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="accent">{label}</Badge>
-            <VersionBadge version={item.version} />
-          </div>
-          <h3
-            className={cn(
-              "font-display font-bold leading-snug tracking-tight text-text group-hover:text-accent",
-              compact ? "line-clamp-2 text-sm" : "line-clamp-2 text-lg",
-            )}
+        </Link>
+        <div className="min-w-0 flex-1">
+          <Link
+            href={item.href}
+            className="line-clamp-2 font-display text-sm font-semibold text-text hover:text-accent"
           >
             {item.title}
+          </Link>
+          <StarRating rating={item.rating} votes={item.votes} className="mt-1 scale-90" />
+        </div>
+      </motion.article>
+    );
+  }
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.04, duration: 0.38 }}
+      className={cn(
+        "group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border-subtle/90 bg-bg-card/50 shadow-[0_4px_24px_rgba(0,0,0,0.25)] backdrop-blur-md transition duration-300",
+        "hover:-translate-y-0.5 hover:border-accent/45 hover:shadow-[0_16px_48px_rgba(0,255,136,0.12)]",
+      )}
+    >
+      <div
+        className="h-0.5 bg-linear-to-r from-transparent via-accent to-transparent opacity-80"
+        aria-hidden
+      />
+
+      <Link
+        href={item.href}
+        className="relative isolate block aspect-5/4 w-full overflow-hidden bg-bg-deep sm:aspect-16/10"
+      >
+        <Image
+          src={item.coverImage}
+          alt={item.title}
+          fill
+          className="object-cover transition duration-500 ease-out group-hover:scale-[1.05]"
+          sizes="(max-width:640px) 100vw, (max-width:1280px) 50vw, 380px"
+        />
+        <div
+          className="absolute inset-0 bg-linear-to-t from-bg-deep via-bg-deep/25 to-transparent"
+          aria-hidden
+        />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-bg-deep/95 to-transparent" aria-hidden />
+
+        {item.isNew ? <NewBadge /> : null}
+        {item.featured ? (
+          <span className="absolute right-3 top-3 z-10 rounded-lg border border-gold/50 bg-gold/95 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-bg-deep shadow-md backdrop-blur-sm">
+            Top pick
+          </span>
+        ) : null}
+
+        <div className="absolute inset-x-0 bottom-0 p-4 pt-10">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="accent" className="shadow-sm">
+              {label}
+            </Badge>
+            <VersionBadge version={item.version} className="border-white/10 bg-black/35 text-text" />
+          </div>
+          <h3 className="mt-2 line-clamp-2 font-display text-lg font-bold leading-snug tracking-tight text-text drop-shadow-md sm:text-xl">
+            {item.title}
           </h3>
-          {!compact ? (
-            <StarRating rating={item.rating} votes={item.votes} />
-          ) : null}
-          <p className="text-xs text-text-muted">
-            {formatPkDate(item.publishedAt)}
-          </p>
         </div>
       </Link>
-      {!compact ? (
-        <div className="border-t border-border-subtle bg-bg-deep/30 px-4 py-2.5">
-          <Link
-            href={`${item.href}#download`}
-            className="inline-flex items-center gap-1.5 text-sm font-display font-semibold text-accent hover:underline"
-          >
-            Download APK
-            <span aria-hidden className="text-xs">
-              →
-            </span>
-          </Link>
+
+      <div className="flex flex-1 flex-col gap-3 p-4 pt-3">
+        {!item.isNew ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusLine item={item} />
+          </div>
+        ) : null}
+
+        <div className="flex flex-wrap gap-2">
+          {item.downloads ? (
+            <MetaChip>
+              <span className="text-accent">{item.downloads}</span>
+              <span className="ml-1 opacity-90">downloads</span>
+            </MetaChip>
+          ) : null}
+          {item.size ? (
+            <MetaChip>
+              <span className="text-text/90">{item.size}</span>
+            </MetaChip>
+          ) : null}
         </div>
-      ) : null}
+
+        <StarRating
+          rating={item.rating}
+          votes={item.votes}
+          className="[&_.font-mono]:text-sm [&_svg]:size-3.5"
+        />
+
+        {item.shortDescription ? (
+          <p className="line-clamp-2 flex-1 text-sm leading-relaxed text-text-muted">
+            {item.shortDescription}
+          </p>
+        ) : (
+          <div className="flex-1" />
+        )}
+      </div>
+
+      <div className="mt-auto grid grid-cols-2 gap-2 border-t border-border-subtle/80 bg-bg-deep/40 p-3 sm:p-4">
+        <Button
+          asChild
+          size="default"
+          className="h-11 font-display text-sm font-bold shadow-md sm:h-10"
+        >
+          {item.directDownloadUrl ? (
+            <a
+              href={item.directDownloadUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() =>
+                track("download_cta_click", { section: "card", mode: "direct_mirror" })
+              }
+            >
+              <Download className="size-4 shrink-0" aria-hidden />
+              Download
+            </a>
+          ) : (
+            <Link
+              href={`${item.href}#download`}
+              onClick={() =>
+                track("download_cta_click", { section: "card", mode: "scroll_listing" })
+              }
+            >
+              <Download className="size-4 shrink-0" aria-hidden />
+              Download
+            </Link>
+          )}
+        </Button>
+        <Button
+          asChild
+          size="default"
+          variant="outline"
+          className="h-11 border-border-subtle bg-bg-card/40 font-display text-sm font-semibold hover:bg-accent-dim/30 sm:h-10"
+        >
+          <Link href={item.href} className="gap-1.5">
+            Review
+            <ArrowRight className="size-4 opacity-80 transition group-hover:translate-x-0.5" aria-hidden />
+          </Link>
+        </Button>
+      </div>
     </motion.article>
   );
 }

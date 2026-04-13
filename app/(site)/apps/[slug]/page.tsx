@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { AppDescription } from "@/components/detail/AppDescription";
+import { DetailPageOutline } from "@/components/detail/DetailPageOutline";
 import { AppHero } from "@/components/detail/AppHero";
-import { AppMetaBox } from "@/components/detail/AppMetaBox";
 import { DownloadMirrorLinks } from "@/components/detail/DownloadMirrorLinks";
 import { FAQSection } from "@/components/detail/FAQSection";
 import { InstallSteps } from "@/components/detail/InstallSteps";
@@ -86,9 +86,12 @@ export default async function AppDetailPage({
   const related = getRelatedApps(app).map(appToCardModel);
   const downloadHref = getPrimaryDownloadUrl(app.downloadLinks);
 
+  const sectionTitle =
+    "font-display text-xl font-bold tracking-tight text-text sm:text-2xl";
+
   return (
-    <div className="grid gap-10 lg:grid-cols-[1fr_280px]">
-      <article className="space-y-10">
+    <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <article className="min-w-0 space-y-10">
         <BreadcrumbJsonLd
           items={[
             { name: "Home", href: "/" },
@@ -121,29 +124,34 @@ export default async function AppDetailPage({
           rating={app.rating}
           votes={app.votes}
           downloadHref={downloadHref}
-        />
-        <AppMetaBox
-          size={app.size}
-          version={app.version}
-          requirements={app.requirements}
           downloads={app.downloads}
+          size={app.size}
+          requirements={app.requirements}
+          version={app.version}
+          isNew={app.isNew}
         />
         <ShareButtons urlPath={app.url} title={app.title} floatingMobile />
-        <AppDescription code={app.body.code} />
+        <section id="review" className="scroll-mt-28 space-y-3">
+          <h2 className={sectionTitle}>Full review</h2>
+          <p className="text-sm text-text-muted">
+            Detailed write-up and tips from our listing—use the outline to jump around.
+          </p>
+          <AppDescription code={app.body.code} />
+        </section>
         {app.screenshots.length > 0 ? (
-          <section className="space-y-3">
-            <h2 className="font-display text-xl font-bold text-text">Screenshots</h2>
+          <section id="screenshots" className="scroll-mt-28 space-y-3">
+            <h2 className={sectionTitle}>Screenshots</h2>
             <ScreenshotGallery urls={app.screenshots} productTitle={app.title} />
           </section>
         ) : null}
         <InstallSteps productTitle={app.title} steps={app.installSteps} />
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-bold text-text">Tags</h2>
+          <h2 className={sectionTitle}>Tags</h2>
           <TagList tags={app.tags} />
         </section>
         <FAQSection faqs={app.faqs} />
-        <section id="download" className="scroll-mt-24 space-y-4">
-          <h2 className="font-display text-xl font-bold text-text">Download</h2>
+        <section id="download" className="scroll-mt-28 space-y-4">
+          <h2 className={sectionTitle}>Download</h2>
           <p className="text-sm text-text-muted">
             Updated {formatPkDate(app.updatedAt)} · verify file size ({app.size}) after download.
           </p>
@@ -151,7 +159,15 @@ export default async function AppDetailPage({
         </section>
         <RelatedApps items={related} />
       </article>
-      <ListingSidebar />
+      <aside className="flex min-w-0 flex-col gap-6">
+        <DetailPageOutline
+          hasScreenshots={app.screenshots.length > 0}
+          hasInstall={app.installSteps.length > 0}
+          hasFaq={app.faqs.length > 0}
+          hasDownload={app.downloadLinks.length > 0}
+        />
+        <ListingSidebar />
+      </aside>
     </div>
   );
 }

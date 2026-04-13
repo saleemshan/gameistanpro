@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { AppDescription } from "@/components/detail/AppDescription";
 import { AppHero } from "@/components/detail/AppHero";
-import { AppMetaBox } from "@/components/detail/AppMetaBox";
+import { DetailPageOutline } from "@/components/detail/DetailPageOutline";
 import { DownloadMirrorLinks } from "@/components/detail/DownloadMirrorLinks";
 import { GamePlayerReviews } from "@/components/detail/GamePlayerReviews";
 import { FAQSection } from "@/components/detail/FAQSection";
@@ -92,9 +92,12 @@ export default async function RootGameDetailPage({
   const related = getRelatedGames(game).map(gameToCardModel);
   const downloadHref = getPrimaryDownloadUrl(game.downloadLinks);
 
+  const sectionTitle =
+    "font-display text-xl font-bold tracking-tight text-text sm:text-2xl";
+
   return (
-    <div className="grid gap-10 lg:grid-cols-[1fr_280px]">
-      <article className="space-y-10">
+    <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <article className="min-w-0 space-y-10">
         <BreadcrumbJsonLd
           items={[
             { name: "Home", href: "/" },
@@ -129,32 +132,38 @@ export default async function RootGameDetailPage({
           rating={game.rating}
           votes={game.votes}
           downloadHref={downloadHref}
-        />
-        <AppMetaBox
-          size={game.size}
-          version={game.version}
-          requirements={game.requirements}
           downloads={game.downloads}
+          size={game.size}
+          requirements={game.requirements}
+          version={game.version}
+          isNew={game.isNew}
         />
         <SafetyTrustBlock />
         <ShareButtons urlPath={game.url} title={game.title} floatingMobile />
-        <AppDescription code={game.body.code} />
+        <section id="review" className="scroll-mt-28 space-y-3">
+          <h2 className={sectionTitle}>Full review</h2>
+          <p className="text-sm text-text-muted">
+            In-depth notes, tables, and screenshots from our listing—scroll or use the outline to
+            jump.
+          </p>
+          <AppDescription code={game.body.code} />
+        </section>
         <GamePlayerReviews gameTitle={game.title} reviews={game.playerReviews} />
         {game.screenshots.length > 0 ? (
-          <section className="space-y-3">
-            <h2 className="font-display text-xl font-bold text-text">Screenshots</h2>
+          <section id="screenshots" className="scroll-mt-28 space-y-3">
+            <h2 className={sectionTitle}>Screenshots</h2>
             <ScreenshotGallery urls={game.screenshots} productTitle={game.title} />
           </section>
         ) : null}
         <InstallSteps productTitle={game.title} steps={game.installSteps} />
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-bold text-text">Tags</h2>
+          <h2 className={sectionTitle}>Tags</h2>
           <TagList tags={game.tags} />
         </section>
         <FAQSection faqs={game.faqs} />
         <RelatedGuides guides={getGuidesForGame(game)} />
-        <section id="download" className="scroll-mt-24 space-y-4">
-          <h2 className="font-display text-xl font-bold text-text">Download</h2>
+        <section id="download" className="scroll-mt-28 space-y-4">
+          <h2 className={sectionTitle}>Download</h2>
           <p className="text-sm text-text-muted">
             Updated {formatPkDate(game.updatedAt)} · verify file size ({game.size}) after download.
           </p>
@@ -162,7 +171,15 @@ export default async function RootGameDetailPage({
         </section>
         <RelatedApps items={related} />
       </article>
-      <ListingSidebar />
+      <aside className="flex min-w-0 flex-col gap-6">
+        <DetailPageOutline
+          hasScreenshots={game.screenshots.length > 0}
+          hasInstall={game.installSteps.length > 0}
+          hasFaq={game.faqs.length > 0}
+          hasDownload={game.downloadLinks.length > 0}
+        />
+        <ListingSidebar />
+      </aside>
     </div>
   );
 }

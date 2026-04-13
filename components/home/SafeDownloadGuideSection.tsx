@@ -1,7 +1,7 @@
 export function SafeDownloadGuideSection() {
   return (
-    <section className="rounded-2xl border border-border-subtle bg-bg-card/40 p-6 backdrop-blur-md md:p-10">
-      <h2 className="font-display text-2xl font-bold text-text">
+    <section className="rounded-3xl border border-border-subtle bg-gradient-to-br from-bg-card/50 to-bg-deep/40 p-6 backdrop-blur-md md:p-10">
+      <h2 className="font-display text-2xl font-bold tracking-tight text-text md:text-3xl">
         How to safely download APK files in Pakistan
       </h2>
       <div className="mt-4 space-y-4 text-sm leading-relaxed text-text-muted">

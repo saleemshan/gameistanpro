@@ -41,19 +41,81 @@
 }
 
 /* MDX bodies (games/apps/guides): pipe tables need remark-gfm + these rules */
-.detail-mdx {
+.detail-mdx :where(hr) {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.detail-mdx :where(p > img:only-child),
+.detail-mdx :where(p > picture:only-child) {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.detail-mdx :where(img) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+}
+
+.detail-mdx :where(code):not(pre code) {
+  border-radius: 0.25rem;
+  background: rgba(15, 23, 42, 0.65);
+  padding: 0.1rem 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--accent);
+}
+
+.light .detail-mdx :where(code):not(pre code) {
+  background: rgba(15, 23, 42, 0.08);
+  color: var(--accent);
+}
+
+.detail-mdx :where(pre) {
+  margin: 1rem 0;
+  max-width: 100%;
   overflow-x: auto;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-subtle);
+  background: rgba(15, 23, 42, 0.55);
+  padding: 1rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--text);
+  -webkit-overflow-scrolling: touch;
+}
+
+.light .detail-mdx :where(pre) {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.detail-mdx :where(pre code) {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
 }
 
 .detail-mdx :where(table) {
+  display: block;
   margin-top: 1rem;
   margin-bottom: 1rem;
   width: 100%;
   max-width: min(100%, 72ch);
+  overflow-x: auto;
   border-collapse: collapse;
   font-size: 0.875rem;
   line-height: 1.45;
   table-layout: fixed;
+  -webkit-overflow-scrolling: touch;
 }
 
 .detail-mdx :where(thead th, tbody td) {

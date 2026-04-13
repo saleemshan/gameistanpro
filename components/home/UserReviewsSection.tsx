@@ -49,13 +49,13 @@ function Stars({ value }: { value: number }) {
 export function UserReviewsSection() {
   return (
     <section
-      className="space-y-6"
+      className="rounded-3xl border border-border-subtle bg-bg-card/25 px-5 py-10 backdrop-blur-md sm:px-8 md:py-12"
       aria-labelledby="reviews-heading"
     >
       <div className="max-w-2xl space-y-2">
         <h2
           id="reviews-heading"
-          className="font-display text-2xl font-bold text-text"
+          className="font-display text-2xl font-bold tracking-tight text-text md:text-3xl"
         >
           Reader feedback
         </h2>
@@ -65,11 +65,11 @@ export function UserReviewsSection() {
           official app or site before you deposit.
         </p>
       </div>
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {reviews.map((r) => (
           <li
             key={r.name}
-            className="flex flex-col rounded-xl border border-border-subtle bg-bg-card/50 p-5 backdrop-blur-sm"
+            className="flex flex-col rounded-2xl border border-border-subtle bg-bg-deep/40 p-5 shadow-md backdrop-blur-sm"
           >
             <div className="flex items-center justify-between gap-2">
               <p className="font-semibold text-text">{r.name}</p>

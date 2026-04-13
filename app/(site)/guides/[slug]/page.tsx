@@ -107,7 +107,7 @@ export default async function GuideDetailPage({
       />
       <div className={toc.length > 0 ? "min-w-0 space-y-8" : "space-y-8"}>
         <Breadcrumb items={crumbs} />
-        <div className="relative aspect-[21/9] w-full overflow-hidden rounded-xl border border-border-subtle">
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border-subtle shadow-lg sm:aspect-[2/1] lg:aspect-[21/9]">
           <Image
             src={guide.coverImage}
             alt={`Cover image for “${guide.title}” — Pakistani gaming guide`}

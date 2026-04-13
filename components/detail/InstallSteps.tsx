@@ -29,7 +29,7 @@ export function InstallSteps({
   };
 
   return (
-    <section className="space-y-4">
+    <section id="install" className="scroll-mt-24 space-y-4">
       <JsonLd data={howTo} />
       <h2 className="flex items-center gap-2 font-display text-xl font-bold text-text">
         <ListOrdered className="size-5 text-accent" />

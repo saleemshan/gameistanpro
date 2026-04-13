@@ -24,7 +24,14 @@ export async function generateMetadata({
   };
 }
 
-export default function SearchPage() {
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const initialQ =
+    typeof sp.q === "string" ? sp.q.trim() : "";
   const items = getAllSearchableItems();
   return (
     <div className="space-y-8">
@@ -34,7 +41,7 @@ export default function SearchPage() {
           Client-side fuzzy search powered by Fuse.js for instant results.
         </p>
       </div>
-      <SearchPageClient items={items} />
+      <SearchPageClient items={items} initialQuery={initialQ} />
     </div>
   );
 }

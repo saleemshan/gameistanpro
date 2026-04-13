@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 
 import { GeneralGuidesSection } from "@/components/home/GeneralGuidesSection";
 import { HeroSection } from "@/components/home/HeroSection";
+import { HomeDirectoryStats } from "@/components/home/HomeDirectoryStats";
 import { HomeFeaturedGamesSection } from "@/components/home/HomeFeaturedGamesSection";
+import { HomeHowToSection } from "@/components/home/HomeHowToSection";
 import { SafeDownloadGuideSection } from "@/components/home/SafeDownloadGuideSection";
 import { UserReviewsSection } from "@/components/home/UserReviewsSection";
 import { WhyChooseSection } from "@/components/home/WhyChooseSection";
@@ -123,9 +125,11 @@ export default async function HomePage({
   return (
     <>
       <JsonLd data={webPageSchema} />
-      <div className="flex flex-col gap-16">
+      <div className="flex flex-col gap-14 md:gap-20">
         <HeroSection />
+        <HomeDirectoryStats />
         <HomeFeaturedGamesSection page={validPage} />
+        <HomeHowToSection />
         <UserReviewsSection />
         <GeneralGuidesSection />
         <WhyChooseSection />
