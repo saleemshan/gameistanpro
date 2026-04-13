@@ -11,6 +11,7 @@
     "test": "vitest",
     "test:e2e": "playwright test",
     "optimize:hero": "node scripts/optimize-hero.mjs",
+    "sync:content-images": "node scripts/download-content-images.mjs",
     "optimize:logo": "node scripts/build-brand-assets.mjs"
   },
   "dependencies": {
