@@ -2,7 +2,8 @@ import Link from "next/link";
 
 import { AppGrid } from "@/components/listing/AppGrid";
 import { Pagination } from "@/components/listing/Pagination";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { gameToCardModel } from "@/lib/card-mappers";
 import { HOMEPAGE_GAMES_PER_PAGE } from "@/lib/constants";
@@ -70,9 +71,12 @@ export function HomeFeaturedGamesSection({ page }: { page: number }) {
             </p>
           ) : null}
         </div>
-        <Button asChild variant="outline" className="font-display">
-          <Link href="/games">View all games</Link>
-        </Button>
+        <Link
+          href="/games"
+          className={cn(buttonVariants({ variant: "outline", size: "default" }), "font-heading")}
+        >
+          View all games
+        </Link>
       </div>
       <div className="mt-8">
         {cards.length ? (

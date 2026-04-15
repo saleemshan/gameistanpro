@@ -4,12 +4,16 @@ import { notFound } from "next/navigation";
 import { GuideMDX } from "@/components/guides/GuideMDX";
 import { FAQSection } from "@/components/detail/FAQSection";
 import { ShareButtons } from "@/components/detail/ShareButtons";
+import { UserReviews } from "@/components/game/UserReviews";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
+import { TableOfContents } from "@/components/mdx/TableOfContents";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { FAQPageJsonLd } from "@/components/seo/FAQPageJsonLd";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { ReviewSchema } from "@/components/seo/ReviewSchema";
 import { getAllGuides, getGuideBySlug, getRelatedGuides } from "@/lib/content";
 import { extractTocFromMarkdown } from "@/lib/guide-toc";
+import { getSiteReviews } from "@/lib/reviews";
 import { absoluteUrl, getMetadataYear, siteConfig } from "@/lib/seo";
 import { formatPkDate } from "@/lib/utils";
 import Image from "next/image";
@@ -64,6 +68,7 @@ export default async function GuideDetailPage({
 
   const toc = extractTocFromMarkdown(guide.body.raw);
   const related = getRelatedGuides(guide);
+  const reviews = getSiteReviews();
 
   const crumbs = [
     { name: "Home", href: "/" },
@@ -75,7 +80,7 @@ export default async function GuideDetailPage({
     <article
       className={
         toc.length > 0
-          ? "grid gap-10 lg:grid-cols-[1fr_220px]"
+          ? "grid gap-8 lg:grid-cols-[1fr_300px] lg:gap-10"
           : "max-w-3xl space-y-8"
       }
     >
@@ -87,6 +92,17 @@ export default async function GuideDetailPage({
         ]}
       />
       <FAQPageJsonLd faqs={guide.faqs} />
+      {reviews.length > 0 ? (
+        <ReviewSchema
+          name={guide.title}
+          urlPath={guide.url}
+          reviews={reviews}
+          overallRating={
+            reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
+          }
+          totalVotes={reviews.length}
+        />
+      ) : null}
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -107,7 +123,7 @@ export default async function GuideDetailPage({
       />
       <div className={toc.length > 0 ? "min-w-0 space-y-8" : "space-y-8"}>
         <Breadcrumb items={crumbs} />
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border-subtle shadow-lg sm:aspect-[2/1] lg:aspect-[21/9]">
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border shadow-lg sm:aspect-[2/1] lg:aspect-[21/9]">
           <Image
             src={guide.coverImage}
             alt={`Cover image for “${guide.title}” — Pakistani gaming guide`}
@@ -118,28 +134,34 @@ export default async function GuideDetailPage({
           />
         </div>
         <header className="space-y-2">
-          <p className="text-sm text-text-muted">
+          <p className="text-sm text-muted-foreground">
             Published {formatPkDate(guide.publishedAt)} · Last updated{" "}
             {formatPkDate(guide.updatedAt)} · {guide.readingTime} min read ·{" "}
             {guide.author}
           </p>
-          <h1 className="font-display text-3xl font-bold text-text md:text-4xl">
+          <h1 className="font-heading text-3xl font-bold text-foreground md:text-4xl">
             {guide.title}
           </h1>
-          <p className="text-lg text-text-muted">{guide.excerpt}</p>
+          <p className="text-lg text-muted-foreground">{guide.excerpt}</p>
         </header>
         <ShareButtons urlPath={guide.url} title={guide.title} />
         <GuideMDX code={guide.body.code} />
+        <section id="reviews" className="scroll-mt-28">
+          <UserReviews reviews={reviews} gameName={guide.title} />
+        </section>
         <FAQSection faqs={guide.faqs} />
         {related.length > 0 ? (
           <section className="space-y-3">
-            <h2 className="font-display text-xl font-bold text-text">
+            <h2 className="font-heading text-xl font-bold text-foreground">
               Related articles
             </h2>
             <ul className="space-y-2">
               {related.map((g) => (
                 <li key={g.slug}>
-                  <Link href={g.url} className="text-accent hover:underline">
+                  <Link
+                    href={g.url}
+                    className="text-primary underline-offset-2 hover:underline"
+                  >
                     {g.title}
                   </Link>
                 </li>
@@ -150,23 +172,12 @@ export default async function GuideDetailPage({
       </div>
       {toc.length > 0 ? (
         <aside className="hidden lg:block">
-          <nav className="sticky top-24 rounded-xl border border-border-subtle bg-bg-card/50 p-4 text-sm backdrop-blur-sm">
-            <p className="mb-3 font-display text-xs font-bold uppercase tracking-wider text-text-muted">
-              On this page
-            </p>
-            <ul className="space-y-2">
-              {toc.map((t) => (
-                <li
-                  key={t.id}
-                  className={t.level === 3 ? "ml-3 text-text-muted" : ""}
-                >
-                  <a href={`#${t.id}`} className="hover:text-accent">
-                    {t.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className="sticky top-24">
+            <TableOfContents
+              items={toc.map((t) => ({ id: t.id, text: t.text, level: t.level }))}
+              extraItems={[{ id: "reviews", text: "User reviews", level: 2 }]}
+            />
+          </div>
         </aside>
       ) : null}
     </article>

@@ -78,16 +78,15 @@ export default async function AppDetailPage({
   if (!app) notFound();
 
   const crumbs = [
-    { name: "Home", href: "/" },
     { name: "Apps", href: "/apps" },
-    { name: app.title },
+    { name: app.title, href: app.url },
   ];
 
   const related = getRelatedApps(app).map(appToCardModel);
   const downloadHref = getPrimaryDownloadUrl(app.downloadLinks);
 
   const sectionTitle =
-    "font-display text-xl font-bold tracking-tight text-text sm:text-2xl";
+    "font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl";
 
   return (
     <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
@@ -133,7 +132,7 @@ export default async function AppDetailPage({
         <ShareButtons urlPath={app.url} title={app.title} floatingMobile />
         <section id="review" className="scroll-mt-28 space-y-3">
           <h2 className={sectionTitle}>Full review</h2>
-          <p className="text-sm text-text-muted">
+          <p className="text-sm text-muted-foreground">
             Detailed write-up and tips from our listing—use the outline to jump around.
           </p>
           <AppDescription code={app.body.code} />
@@ -152,7 +151,7 @@ export default async function AppDetailPage({
         <FAQSection faqs={app.faqs} />
         <section id="download" className="scroll-mt-28 space-y-4">
           <h2 className={sectionTitle}>Download</h2>
-          <p className="text-sm text-text-muted">
+          <p className="text-sm text-muted-foreground">
             Updated {formatPkDate(app.updatedAt)} · verify file size ({app.size}) after download.
           </p>
           <DownloadMirrorLinks links={app.downloadLinks} />

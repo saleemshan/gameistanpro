@@ -7,6 +7,7 @@ import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 
 import { remarkStripEmbeddedFaq } from "./lib/remark-strip-embedded-faq";
+import { remarkStripGuideBoilerplate } from "./lib/remark-strip-guide-boilerplate";
 
 const FaqNested = defineNestedType(() => ({
   name: "FaqItem",
@@ -32,6 +33,32 @@ const PlayerReviewNested = defineNestedType(() => ({
     place: { type: "string", required: false },
     rating: { type: "number", required: true },
     text: { type: "string", required: true },
+  },
+}));
+
+const ProsConNested = defineNestedType(() => ({
+  name: "ProsConItem",
+  fields: {
+    pro: { type: "string", required: true },
+    con: { type: "string", required: true },
+  },
+}));
+
+const SystemRequirementNested = defineNestedType(() => ({
+  name: "SystemRequirementItem",
+  fields: {
+    label: { type: "string", required: true },
+    value: { type: "string", required: true },
+  },
+}));
+
+const VersionHistoryNested = defineNestedType(() => ({
+  name: "VersionHistoryItem",
+  fields: {
+    version: { type: "string", required: true },
+    released: { type: "string", required: true },
+    size: { type: "string", required: false },
+    notes: { type: "string", required: false },
   },
 }));
 
@@ -109,6 +136,14 @@ export const Game = defineDocumentType(() => ({
     faqs: { type: "list", of: FaqNested, default: [] },
     installSteps: { type: "list", of: InstallStepNested, default: [] },
     playerReviews: { type: "list", of: PlayerReviewNested, default: [] },
+    /** Optional; when empty, UI fills EarningGames-style rows from slug + dates. */
+    prosAndCons: { type: "list", of: ProsConNested, default: [] },
+    systemRequirementRows: {
+      type: "list",
+      of: SystemRequirementNested,
+      default: [],
+    },
+    versionHistory: { type: "list", of: VersionHistoryNested, default: [] },
   },
   computedFields: {
     url: { type: "string", resolve: (doc) => `/${doc.slug}` },
@@ -156,7 +191,11 @@ export default makeSource({
   disableImportAliasWarning: true,
   mdx: {
     // GFM pipe tables (Pros | Cons), strikethrough, autolinks, etc.
-    remarkPlugins: [remarkGfm, remarkStripEmbeddedFaq],
+    remarkPlugins: [
+      remarkGfm,
+      remarkStripEmbeddedFaq,
+      remarkStripGuideBoilerplate,
+    ],
     rehypePlugins: [rehypeSlug],
   },
 });

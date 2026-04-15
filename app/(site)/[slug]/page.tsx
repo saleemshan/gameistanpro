@@ -1,35 +1,55 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { AppDescription } from "@/components/detail/AppDescription";
-import { AppHero } from "@/components/detail/AppHero";
 import { DetailPageOutline } from "@/components/detail/DetailPageOutline";
 import { DownloadMirrorLinks } from "@/components/detail/DownloadMirrorLinks";
-import { GamePlayerReviews } from "@/components/detail/GamePlayerReviews";
 import { FAQSection } from "@/components/detail/FAQSection";
 import { InstallSteps } from "@/components/detail/InstallSteps";
-import { RelatedApps } from "@/components/detail/RelatedApps";
 import { RelatedGuides } from "@/components/detail/RelatedGuides";
-import { EditorialReviewNote } from "@/components/detail/EditorialReviewNote";
-import { ResponsibleGamblingBanner } from "@/components/detail/ResponsibleGamblingBanner";
-import { SafetyTrustBlock } from "@/components/detail/SafetyTrustBlock";
 import { ScreenshotGallery } from "@/components/detail/ScreenshotGallery";
-import { ShareButtons } from "@/components/detail/ShareButtons";
 import { TagList } from "@/components/detail/TagList";
+import { GameHero } from "@/components/game/GameHero";
+import { DownloadButton } from "@/components/game/DownloadButton";
+import { RelatedGames } from "@/components/game/RelatedGames";
+import { ReportModal } from "@/components/game/ReportModal";
+import { UserReviews } from "@/components/game/UserReviews";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { ListingSidebar } from "@/components/layout/ListingSidebar";
-import { SoftwareApplicationJsonLd } from "@/components/seo/AppJsonLd";
-import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
+import { GameCard } from "@/components/game/GameCard";
+import { GameProsConsTable } from "@/components/game/GameProsConsTable";
+import { GameSystemRequirementsTable } from "@/components/game/GameSystemRequirementsTable";
+import { GameVersionHistoryTable } from "@/components/game/GameVersionHistoryTable";
+import { ArticleSchema } from "@/components/seo/ArticleSchema";
+import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
 import { FAQPageJsonLd } from "@/components/seo/FAQPageJsonLd";
-import { gameToCardModel } from "@/lib/card-mappers";
-import { getAllGames, getGameBySlug, getGuidesForGame, getRelatedGames } from "@/lib/content";
+import { FAQSchema } from "@/components/seo/FAQSchema";
+import { GameSchema } from "@/components/seo/GameSchema";
+import { ReviewSchema } from "@/components/seo/ReviewSchema";
+import { SoftwareApplicationJsonLd } from "@/components/seo/AppJsonLd";
+import {
+  contentGameToEarningGame,
+  getMostViewed,
+  getRelatedGamesByTags,
+  getTopRated,
+  type Game as EarningGame,
+} from "@/lib/games";
+import {
+  getAllGames,
+  getGameBySlug,
+  getGuidesForGame,
+  getRelatedGames,
+} from "@/lib/content";
+import { getPrimaryDownloadUrl } from "@/lib/download-links";
+import { resolveGameDetailExtras } from "@/lib/game-detail-extras";
+import { getReviewsForGame } from "@/lib/reviews";
+import { formatPkDate } from "@/lib/utils";
 import {
   absoluteUrl,
   buildGameMetaDescription,
   buildGameMetaTitle,
+  getCategoryLabel,
 } from "@/lib/seo";
-import { getPrimaryDownloadUrl } from "@/lib/download-links";
-import { formatPkDate } from "@/lib/utils";
 
 export const revalidate = 86400;
 
@@ -45,7 +65,6 @@ export async function generateMetadata({
   const { slug } = await params;
   const game = getGameBySlug(slug);
   if (!game) return { title: "Not found" };
-
   const path = game.url;
   const title = buildGameMetaTitle(game);
   const description = buildGameMetaDescription(game);
@@ -74,6 +93,38 @@ export async function generateMetadata({
   };
 }
 
+async function SidebarGames() {
+  const [topRated, mostViewed] = await Promise.all([
+    getTopRated(5),
+    getMostViewed(5),
+  ]);
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-xl border border-border bg-card p-4">
+        <h3 className="mb-3 font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Top Rated
+        </h3>
+        <div className="space-y-2">
+          {topRated.map((g) => (
+            <GameCard key={g.slug} game={g} compact />
+          ))}
+        </div>
+      </div>
+      <div className="rounded-xl border border-border bg-card p-4">
+        <h3 className="mb-3 font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Most Downloaded
+        </h3>
+        <div className="space-y-2">
+          {mostViewed.map((g) => (
+            <GameCard key={g.slug} game={g} compact />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function RootGameDetailPage({
   params,
 }: {
@@ -83,103 +134,182 @@ export default async function RootGameDetailPage({
   const game = getGameBySlug(slug);
   if (!game) notFound();
 
-  const crumbs = [
-    { name: "Home", href: "/" },
-    { name: "Games", href: "/games" },
-    { name: game.title },
-  ];
-
-  const related = getRelatedGames(game).map(gameToCardModel);
+  const extras = resolveGameDetailExtras(game);
+  const earningGame = contentGameToEarningGame(game);
+  earningGame.version = extras.displayVersion;
+  earningGame.fileSize = extras.displaySize;
   const downloadHref = getPrimaryDownloadUrl(game.downloadLinks);
 
-  const sectionTitle =
-    "font-display text-xl font-bold tracking-tight text-text sm:text-2xl";
+  let relatedEarning: EarningGame[] = await getRelatedGamesByTags(
+    game.tags,
+    slug,
+    6,
+  );
+  if (relatedEarning.length === 0) {
+    relatedEarning = getRelatedGames(game).map(contentGameToEarningGame);
+  }
+
+  const reviews = getReviewsForGame(slug);
+  const categoryLabel = getCategoryLabel(earningGame.category);
+  const faqs = game.faqs.map((f) => ({
+    question: f.question,
+    answer: f.answer,
+  }));
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
-      <article className="min-w-0 space-y-10">
-        <BreadcrumbJsonLd
+    <>
+      <GameSchema game={earningGame} />
+      {faqs.length > 0 ? <FAQSchema faqs={faqs} /> : null}
+      <ArticleSchema
+        title={game.title}
+        description={game.shortDescription}
+        url={`/${slug}`}
+        image={earningGame.iconUrl || undefined}
+        datePublished={game.publishedAt}
+        dateModified={game.updatedAt}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", href: "/" },
+          { name: categoryLabel, href: `/category/${earningGame.category}` },
+          { name: game.title, href: game.url },
+        ]}
+      />
+      {reviews.length > 0 ? (
+        <ReviewSchema
+          name={game.title}
+          urlPath={game.url}
+          reviews={reviews}
+          overallRating={Number(earningGame.rating) || 4.5}
+          totalVotes={earningGame.totalVotes || reviews.length}
+        />
+      ) : null}
+      <SoftwareApplicationJsonLd
+        name={game.title}
+        description={game.shortDescription}
+        slugPath={game.url}
+        rating={game.rating}
+        votes={game.votes}
+        kind="game"
+        coverImage={game.coverImage}
+        screenshots={game.screenshots}
+        softwareVersion={extras.displayVersion}
+        fileSize={extras.displaySize}
+        datePublished={game.publishedAt}
+        dateModified={game.updatedAt}
+        tags={game.tags}
+        categoryKey={game.category}
+      />
+      {faqs.length > 0 ? <FAQPageJsonLd faqs={game.faqs} /> : null}
+
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <Breadcrumb
           items={[
-            { name: "Home", href: "/" },
-            { name: "Games", href: "/games" },
+            { name: categoryLabel, href: `/category/${earningGame.category}` },
             { name: game.title, href: game.url },
           ]}
         />
-        <SoftwareApplicationJsonLd
-          name={game.title}
-          description={game.shortDescription}
-          slugPath={game.url}
-          rating={game.rating}
-          votes={game.votes}
-          kind="game"
-          coverImage={game.coverImage}
-          screenshots={game.screenshots}
-          softwareVersion={game.version}
-          fileSize={game.size}
-          datePublished={game.publishedAt}
-          dateModified={game.updatedAt}
-          tags={game.tags}
-          categoryKey={game.category}
-        />
-        <FAQPageJsonLd faqs={game.faqs} />
-        <Breadcrumb items={crumbs} />
-        <EditorialReviewNote updatedAt={game.updatedAt} />
-        <ResponsibleGamblingBanner />
-        <AppHero
-          title={game.title}
-          coverImage={game.coverImage}
-          shortDescription={game.shortDescription}
-          rating={game.rating}
-          votes={game.votes}
-          downloadHref={downloadHref}
-          downloads={game.downloads}
-          size={game.size}
-          requirements={game.requirements}
-          version={game.version}
-          isNew={game.isNew}
-        />
-        <SafetyTrustBlock />
-        <ShareButtons urlPath={game.url} title={game.title} floatingMobile />
-        <section id="review" className="scroll-mt-28 space-y-3">
-          <h2 className={sectionTitle}>Full review</h2>
-          <p className="text-sm text-text-muted">
-            In-depth notes, tables, and screenshots from our listing—scroll or use the outline to
-            jump.
-          </p>
-          <AppDescription code={game.body.code} />
-        </section>
-        <GamePlayerReviews gameTitle={game.title} reviews={game.playerReviews} />
-        {game.screenshots.length > 0 ? (
-          <section id="screenshots" className="scroll-mt-28 space-y-3">
-            <h2 className={sectionTitle}>Screenshots</h2>
-            <ScreenshotGallery urls={game.screenshots} productTitle={game.title} />
-          </section>
-        ) : null}
-        <InstallSteps productTitle={game.title} steps={game.installSteps} />
-        <section className="space-y-3">
-          <h2 className={sectionTitle}>Tags</h2>
-          <TagList tags={game.tags} />
-        </section>
-        <FAQSection faqs={game.faqs} />
-        <RelatedGuides guides={getGuidesForGame(game)} />
-        <section id="download" className="scroll-mt-28 space-y-4">
-          <h2 className={sectionTitle}>Download</h2>
-          <p className="text-sm text-text-muted">
-            Updated {formatPkDate(game.updatedAt)} · verify file size ({game.size}) after download.
-          </p>
-          <DownloadMirrorLinks links={game.downloadLinks} />
-        </section>
-        <RelatedApps items={related} />
-      </article>
-      <aside className="flex min-w-0 flex-col gap-6">
-        <DetailPageOutline
-          hasScreenshots={game.screenshots.length > 0}
-          hasInstall={game.installSteps.length > 0}
-          hasFaq={game.faqs.length > 0}
-          hasDownload={game.downloadLinks.length > 0}
-        />
-        <ListingSidebar />
-      </aside>
-    </div>
+
+        <GameHero game={earningGame} />
+
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_300px]">
+          <div className="space-y-10">
+            <article id="review" className="min-w-0 scroll-mt-28">
+              <AppDescription code={game.body.code} />
+            </article>
+
+            {reviews.length > 0 ? (
+              <section id="reviews" className="scroll-mt-28">
+                <UserReviews reviews={reviews} gameName={game.title} />
+              </section>
+            ) : null}
+
+            <GameProsConsTable
+              rows={extras.prosAndCons}
+              productName={game.title.replace(/\s+APK.*$/i, "").trim() || game.title}
+            />
+            <GameSystemRequirementsTable
+              rows={extras.systemRequirements}
+              productName={game.title.replace(/\s+APK.*$/i, "").trim() || game.title}
+            />
+
+            <div>
+              <ReportModal gameName={game.title} />
+            </div>
+
+            {game.screenshots.length > 0 ? (
+              <section id="screenshots" className="scroll-mt-28 space-y-3">
+                <h2 className="font-heading text-2xl font-bold text-foreground">
+                  Screenshots
+                </h2>
+                <ScreenshotGallery
+                  urls={game.screenshots}
+                  productTitle={game.title}
+                />
+              </section>
+            ) : null}
+
+            <InstallSteps
+              productTitle={game.title}
+              steps={extras.installSteps}
+            />
+
+            <GameVersionHistoryTable
+              rows={extras.versionHistory}
+              productName={game.title.replace(/\s+APK.*$/i, "").trim() || game.title}
+            />
+
+            <section className="mt-10 space-y-3">
+              <h2 className="font-heading text-2xl font-bold text-foreground">
+                Tags
+              </h2>
+              <TagList tags={game.tags} />
+            </section>
+
+            <div className="mt-10">
+              <FAQSection faqs={game.faqs} />
+            </div>
+
+            <RelatedGuides guides={getGuidesForGame(game)} />
+
+            <section id="download" className="scroll-mt-28 space-y-4">
+              <h2 className="font-heading text-2xl font-bold text-foreground">
+                Download
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Updated {formatPkDate(game.updatedAt)} · verify file size (
+                {extras.displaySize}) after download.
+              </p>
+              <DownloadMirrorLinks links={game.downloadLinks} />
+            </section>
+
+            <RelatedGames games={relatedEarning} />
+          </div>
+
+          <aside className="hidden lg:block">
+            <div className="sticky top-20 space-y-6">
+              <DetailPageOutline
+                hasReviews={reviews.length > 0}
+                hasScreenshots={game.screenshots.length > 0}
+                hasInstall={extras.installSteps.length > 0}
+                hasFaq={game.faqs.length > 0}
+                hasDownload={game.downloadLinks.length > 0}
+              />
+              <Suspense
+                fallback={
+                  <div className="h-64 animate-pulse rounded-xl bg-muted" />
+                }
+              >
+                <SidebarGames />
+              </Suspense>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      {downloadHref ? (
+        <DownloadButton url={downloadHref} gameName={game.title} sticky />
+      ) : null}
+    </>
   );
 }

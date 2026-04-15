@@ -10,7 +10,7 @@ export function GeneralGuidesSection() {
   return (
     <section className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h2 className="font-display text-2xl font-bold tracking-tight text-text md:text-3xl">
+        <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
           Guides &amp; long-form reviews
         </h2>
         <Link
@@ -24,7 +24,7 @@ export function GeneralGuidesSection() {
         {guides.map((g) => (
           <li
             key={g.slug}
-            className="flex flex-col gap-4 rounded-2xl border border-border-subtle bg-bg-card/60 p-4 shadow-lg backdrop-blur-sm transition hover:border-accent/35 sm:flex-row"
+            className="flex flex-col gap-4 rounded-2xl border border-border bg-card/60 p-4 shadow-lg backdrop-blur-sm transition hover:border-accent/35 sm:flex-row"
           >
             <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-lg sm:aspect-[16/10] sm:w-48">
               <Image
@@ -36,14 +36,14 @@ export function GeneralGuidesSection() {
               />
             </div>
             <div className="min-w-0 flex-1 space-y-2">
-              <Badge variant="accent">{g.category}</Badge>
+              <Badge variant="secondary">{g.category}</Badge>
               <Link href={g.url}>
-                <h3 className="font-display text-lg font-semibold text-text hover:text-accent">
+                <h3 className="font-heading text-lg font-semibold text-foreground hover:text-accent">
                   {g.title}
                 </h3>
               </Link>
-              <p className="text-sm text-text-muted">{g.excerpt}</p>
-              <p className="text-xs text-text-muted">
+              <p className="text-sm text-muted-foreground">{g.excerpt}</p>
+              <p className="text-xs text-muted-foreground">
                 {formatPkDate(g.publishedAt)}
               </p>
             </div>

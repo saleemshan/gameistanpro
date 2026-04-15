@@ -164,10 +164,10 @@ export default async function AppsPage({
       <div className="space-y-8">
         <JsonLd data={collectionJsonLd} />
         <div>
-          <h1 className="font-display text-3xl font-bold text-text md:text-4xl">
+          <h1 className="font-heading text-3xl font-bold text-foreground md:text-4xl">
             Apps, tools &amp; injectors – download free APKs in Pakistan
           </h1>
-          <p className="mt-3 max-w-2xl text-text-muted">
+          <p className="mt-3 max-w-2xl text-muted-foreground">
             Filter by category, sort by rating or freshness, and jump straight to verified detail
             pages.
           </p>

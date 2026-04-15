@@ -3,7 +3,8 @@
 import { track } from "@vercel/analytics";
 import { Download } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function DownloadButton({
   label = "Download APK",
@@ -16,30 +17,31 @@ export function DownloadButton({
   const trimmed = href?.trim();
   if (trimmed && /^https?:\/\//i.test(trimmed)) {
     return (
-      <Button
-        asChild
-        size="lg"
-        className="animate-pulse-glow w-full font-display text-base font-bold sm:w-auto"
+      <a
+        href={trimmed}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn(
+          buttonVariants({ variant: "default", size: "lg" }),
+          "animate-pulse-glow inline-flex w-full font-heading text-base font-bold sm:w-auto",
+        )}
+        onClick={() =>
+          track("download_cta_click", { section: "hero", mode: "direct_mirror" })
+        }
       >
-        <a
-          href={trimmed}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() =>
-            track("download_cta_click", { section: "hero", mode: "direct_mirror" })
-          }
-        >
-          <Download />
-          {label}
-        </a>
-      </Button>
+        <Download className="size-4" />
+        {label}
+      </a>
     );
   }
 
   return (
-    <Button
-      size="lg"
-      className="animate-pulse-glow w-full font-display text-base font-bold sm:w-auto"
+    <button
+      type="button"
+      className={cn(
+        buttonVariants({ variant: "default", size: "lg" }),
+        "animate-pulse-glow w-full font-heading text-base font-bold sm:w-auto",
+      )}
       onClick={() => {
         track("download_cta_click", { section: "hero", mode: "scroll_to_section" });
         document.getElementById("download")?.scrollIntoView({
@@ -47,10 +49,9 @@ export function DownloadButton({
           block: "start",
         });
       }}
-      type="button"
     >
-      <Download />
+      <Download className="size-4" />
       {label}
-    </Button>
+    </button>
   );
 }

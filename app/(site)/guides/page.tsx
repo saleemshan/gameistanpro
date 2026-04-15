@@ -80,12 +80,12 @@ export default async function GuidesPage({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-3xl font-bold text-text md:text-4xl">
+        <h1 className="font-heading text-3xl font-bold text-foreground md:text-4xl">
           {cat
             ? `${GUIDE_CAT_LABEL[cat]} guides & tips for Pakistani players`
             : "Gaming guides & casino tips for Pakistani players"}
         </h1>
-        <p className="mt-3 max-w-2xl text-text-muted">
+        <p className="mt-3 max-w-2xl text-muted-foreground">
           Editorial articles covering APK safety, fake apps, and wallet hygiene.
         </p>
       </div>
@@ -99,7 +99,7 @@ export default async function GuidesPage({
           <Link
             key={g.slug}
             href={g.url}
-            className="group flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-bg-card/50 backdrop-blur-sm transition hover:border-accent/35"
+            className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card/60 backdrop-blur-sm transition hover:border-accent/35"
           >
             <div className="relative aspect-[16/9] w-full">
               <Image
@@ -111,12 +111,12 @@ export default async function GuidesPage({
               />
             </div>
             <div className="space-y-2 p-4">
-              <Badge variant="accent">{g.category}</Badge>
-              <h2 className="font-display text-lg font-semibold text-text group-hover:text-accent">
+              <Badge variant="secondary">{g.category}</Badge>
+              <h2 className="font-heading text-lg font-semibold text-foreground group-hover:text-accent">
                 {g.title}
               </h2>
-              <p className="line-clamp-2 text-sm text-text-muted">{g.excerpt}</p>
-              <p className="text-xs text-text-muted">
+              <p className="line-clamp-2 text-sm text-muted-foreground">{g.excerpt}</p>
+              <p className="text-xs text-muted-foreground">
                 {formatPkDate(g.publishedAt)} · {g.readingTime} min read
               </p>
             </div>

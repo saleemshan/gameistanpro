@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 import { AppGrid } from "@/components/listing/AppGrid";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { gameToCardModel } from "@/lib/card-mappers";
 import { getAllGames } from "@/lib/content";
 
@@ -17,9 +18,12 @@ export function GamesSection() {
         <h2 className="font-display text-2xl font-bold text-text">
           Earning &amp; prediction games
         </h2>
-        <Button asChild variant="ghost">
-          <Link href="/games">Browse all games</Link>
-        </Button>
+        <Link
+          href="/games"
+          className={cn(buttonVariants({ variant: "ghost", size: "default" }), "font-heading")}
+        >
+          Browse all games
+        </Link>
       </div>
       <AppGrid items={cards} />
     </section>

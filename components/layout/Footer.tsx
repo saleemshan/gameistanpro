@@ -1,77 +1,80 @@
 import Link from "next/link";
+import { Gamepad2 } from "lucide-react";
 
-import { SiteLogoLink } from "@/components/brand/SiteLogoLink";
-import { getContactEmail, siteConfig } from "@/lib/seo";
+import { Separator } from "@/components/ui/separator";
+import { siteConfig } from "@/lib/seo";
 
 const footerLinks = [
-  { href: "/apps", label: "Apps & tools" },
-  { href: "/games", label: "Games" },
-  { href: "/guides", label: "Guides" },
-  { href: "/about", label: "About" },
-  { href: "/categories/casino-games", label: "Casino games" },
-  { href: "/categories/tools", label: "Tools" },
-  { href: "/disclaimer", label: "Disclaimer" },
-  { href: "/privacy-policy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
+  {
+    title: "Categories",
+    links: [
+      { href: "/category/casino-games", label: "Casino Games" },
+      { href: "/category/earning-apps", label: "Earning Apps" },
+      { href: "/category/general", label: "General" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { href: "/privacy-policy", label: "Privacy Policy" },
+      { href: "/disclaimer", label: "Disclaimer" },
+      { href: "/terms", label: "Terms & Conditions" },
+      { href: "/contact", label: "Contact Us" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { href: "/about", label: "About Us" },
+      { href: "/search", label: "Search Apps" },
+    ],
+  },
 ];
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border-subtle bg-bg-deep/90">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:justify-between lg:px-8">
-        <div className="max-w-md space-y-3">
-          <div className="flex flex-col gap-3">
-            <SiteLogoLink size="sm" />
-            <p className="font-display text-sm font-semibold text-text-muted">
-              {siteConfig.name}
-            </p>
-          </div>
-          <p className="text-sm text-text-muted">{siteConfig.description}</p>
-          <p className="text-xs text-danger">
-            18+ only. Gambling involves risk. Play responsibly.
-          </p>
-          {/* SEO FIX: Visible contact supports E-E-A-T; email from NEXT_PUBLIC_CONTACT_EMAIL. */}
-          <p className="text-xs text-text-muted">
-            Contact:{" "}
-            <a href={`mailto:${getContactEmail()}`} className="text-accent hover:underline">
-              {getContactEmail()}
-            </a>
-          </p>
-        </div>
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+    <footer className="mt-auto border-t border-border bg-card/50">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
-              Explore
+            <Link
+              href="/"
+              className="flex items-center gap-2 font-heading text-lg font-bold"
+            >
+              <Gamepad2 className="h-5 w-5 text-primary" />
+              <span>
+                Gameistan<span className="text-primary"> Pro</span>
+              </span>
+            </Link>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              {siteConfig.description}
             </p>
-            <ul className="space-y-2 text-sm">
-              {footerLinks.slice(0, 5).map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="text-text-muted hover:text-accent">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </div>
-          <div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
-              Legal
-            </p>
-            <ul className="space-y-2 text-sm">
-              {footerLinks.slice(5).map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="text-text-muted hover:text-accent">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {footerLinks.map((section) => (
+            <div key={section.title}>
+              <h3 className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                {section.title}
+              </h3>
+              <ul className="mt-3 space-y-2">
+                {section.links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
-      </div>
-      <div className="border-t border-border-subtle py-4 text-center text-xs text-text-muted">
-        © {new Date().getFullYear()} {siteConfig.name}. Pakistan-focused gaming
-        editorial.
+        <Separator className="my-8" />
+        <p className="text-center text-xs text-muted-foreground">
+          &copy; {new Date().getFullYear()} {siteConfig.name}. All rights
+          reserved. This site is for informational purposes only.
+        </p>
       </div>
     </footer>
   );

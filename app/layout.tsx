@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, JetBrains_Mono, Syne } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -17,20 +17,20 @@ import {
 
 import "./globals.css";
 
-const syne = Syne({
-  variable: "--font-syne",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
   display: "swap",
 });
 
 const jetbrains = JetBrains_Mono({
-  variable: "--font-jetbrains",
+  variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
 });
@@ -108,8 +108,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0f1e" },
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f0f1a" },
   ],
 };
 
@@ -121,7 +121,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="dark h-full"
+      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrains.variable} dark h-full`}
       suppressHydrationWarning
     >
       <head>
@@ -133,9 +133,7 @@ export default function RootLayout({
         />
         <link rel="dns-prefetch" href="https://gameistan.com.pk" />
       </head>
-      <body
-        className={`${syne.variable} ${dmSans.variable} ${jetbrains.variable} flex min-h-full flex-col font-sans`}
-      >
+      <body className="flex min-h-screen flex-col bg-background font-sans text-foreground antialiased">
         <JsonLd data={[orgSchema, websiteSchema]} />
         <Providers>
           {children}

@@ -34,11 +34,11 @@ export default async function SearchPage({
     typeof sp.q === "string" ? sp.q.trim() : "";
   const items = getAllSearchableItems();
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-3xl space-y-8">
       <div>
-        <h1 className="font-display text-3xl font-bold text-text">Search</h1>
-        <p className="mt-2 text-text-muted">
-          Client-side fuzzy search powered by Fuse.js for instant results.
+        <h1 className="font-heading text-3xl font-bold text-foreground">Search</h1>
+        <p className="mt-2 text-muted-foreground">
+          Fuzzy search across apps, games, and guides.
         </p>
       </div>
       <SearchPageClient items={items} initialQuery={initialQ} />

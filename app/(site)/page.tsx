@@ -1,140 +1,594 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import Link from "next/link";
+import { Suspense } from "react";
+import {
+  Search,
+  Shield,
+  Download,
+  RefreshCw,
+  ArrowRight,
+  Star,
+  Zap,
+  CreditCard,
+  Smartphone,
+  CheckCircle,
+} from "lucide-react";
 
-import { GeneralGuidesSection } from "@/components/home/GeneralGuidesSection";
-import { HeroSection } from "@/components/home/HeroSection";
-import { HomeDirectoryStats } from "@/components/home/HomeDirectoryStats";
-import { HomeFeaturedGamesSection } from "@/components/home/HomeFeaturedGamesSection";
-import { HomeHowToSection } from "@/components/home/HomeHowToSection";
-import { SafeDownloadGuideSection } from "@/components/home/SafeDownloadGuideSection";
-import { UserReviewsSection } from "@/components/home/UserReviewsSection";
-import { WhyChooseSection } from "@/components/home/WhyChooseSection";
+import { FAQAccordion } from "@/components/mdx/FAQAccordion";
+import { UserReviews } from "@/components/game/UserReviews";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { GameGrid } from "@/components/game/GameGrid";
+import { FAQSchema } from "@/components/seo/FAQSchema";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { HOMEPAGE_GAMES_PER_PAGE } from "@/lib/constants";
-import { getHomepageGamesPage } from "@/lib/content";
-import { absoluteUrl, getSiteUrl, siteConfig } from "@/lib/seo";
+import {
+  getFeaturedGames,
+  getGamesByCategory,
+  getLatestGames,
+  getTotalDownloads,
+  getTotalGamesCount,
+} from "@/lib/games";
+import { getSiteReviews } from "@/lib/reviews";
+import { absoluteUrl, siteConfig } from "@/lib/seo";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
-const homeDescription =
-  "Browse real-money earning games in Pakistan: color prediction, casino APKs, JazzCash & EasyPaisa guides, ratings, versions, and safe install tips. Independent PKR-focused reviews for 2026.";
+const BASE = () => absoluteUrl("/");
 
-const homeKeywords = [
-  "earning games Pakistan",
-  "color prediction app Pakistan",
-  "real money games PKR",
-  "casino APK download Pakistan",
-  "JazzCash earning games",
-  "EasyPaisa withdrawal games",
-  "PK gaming guides",
-  "safe APK install Pakistan",
-] as const;
+const homeFAQs = [
+  {
+    question: "What are earning games?",
+    answer:
+      "Earning games are mobile applications that allow users to earn real money by playing games, completing tasks, or participating in activities. These apps are popular in Pakistan and support payment methods like JazzCash and Easypaisa.",
+  },
+  {
+    question: "Are APK downloads safe?",
+    answer:
+      "APK files downloaded from trusted sources are generally safe. We verify every APK listed on our site for malware and security issues. Always download from official links and avoid unknown third-party sources.",
+  },
+  {
+    question: "How do I install an APK on Android?",
+    answer:
+      "Go to Settings > Security > Unknown Sources and enable it. Download the APK file, open your file manager, locate the downloaded file, and tap to install. Follow the on-screen instructions to complete installation.",
+  },
+  {
+    question: "Can I earn real money from these apps?",
+    answer:
+      "Yes, many apps listed on our site allow you to earn real money. Earnings vary based on the app, your activity level, and the games you play. Most apps support withdrawals via JazzCash, Easypaisa, or bank transfer.",
+  },
+  {
+    question: "Which payment methods are supported?",
+    answer:
+      "Most earning games and casino apps in Pakistan support JazzCash, Easypaisa, bank transfers, and some support cryptocurrency (USDT). Check each app's detail page for specific payment methods.",
+  },
+  {
+    question: "Are casino games legal in Pakistan?",
+    answer:
+      "The legal status of online casino games in Pakistan is complex. While there are no specific laws banning online gaming apps, users should exercise caution and understand the risks. Our site provides information for educational purposes.",
+  },
+  {
+    question: "Do I need an internet connection to play?",
+    answer:
+      "Most earning and casino games require a stable internet connection (3G, 4G, or Wi-Fi) to function properly. Some apps may offer limited offline features, but real-money features always require internet access.",
+  },
+];
 
-function parseHomePage(v: string | string[] | undefined): number {
-  const raw = typeof v === "string" ? v : v?.[0];
-  const n = raw ? parseInt(raw, 10) : 1;
-  return Number.isFinite(n) && n > 0 ? n : 1;
-}
+export const metadata: Metadata = {
+  title: siteConfig.defaultTitle,
+  description: siteConfig.description,
+  alternates: { canonical: absoluteUrl("/") },
+  openGraph: {
+    title: siteConfig.defaultTitle,
+    description: siteConfig.description,
+    url: absoluteUrl("/"),
+    type: "website",
+    locale: siteConfig.locale,
+    siteName: siteConfig.name,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.defaultTitle,
+    description: siteConfig.description,
+  },
+};
 
-function homeCanonicalPath(page: number): string {
-  return page <= 1 ? "/" : `/?page=${page}`;
-}
-
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}): Promise<Metadata> {
-  const sp = await searchParams;
-  const requested = parseHomePage(sp.page);
-  const { page, totalPages } = getHomepageGamesPage(
-    requested,
-    HOMEPAGE_GAMES_PER_PAGE,
+function HomeCollectionSchema() {
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: `${siteConfig.name} – Best Earning Game APKs Pakistan`,
+        description: siteConfig.description,
+        url: BASE(),
+        isPartOf: { "@type": "WebSite", name: siteConfig.name, url: BASE() },
+        about: {
+          "@type": "Thing",
+          name: "Earning Game APKs Pakistan",
+          description:
+            "Real money earning games and casino apps for Pakistani players with JazzCash and EasyPaisa support",
+        },
+      }}
+    />
   );
-  const path = homeCanonicalPath(page);
-  const canonical = absoluteUrl(path);
-
-  const titleAbsolute =
-    page > 1
-      ? `${siteConfig.defaultTitle} — Page ${page}`
-      : siteConfig.defaultTitle;
-
-  return {
-    title: { absolute: titleAbsolute },
-    description: homeDescription,
-    keywords: [...homeKeywords],
-    robots: { index: true, follow: true },
-    alternates: {
-      canonical,
-      ...(page > 1
-        ? { prev: absoluteUrl(homeCanonicalPath(page - 1)) }
-        : {}),
-      ...(page < totalPages
-        ? { next: absoluteUrl(homeCanonicalPath(page + 1)) }
-        : {}),
-    },
-    openGraph: {
-      title: titleAbsolute,
-      description: homeDescription,
-      url: canonical,
-      type: "website",
-      locale: siteConfig.locale,
-      siteName: siteConfig.name,
-      images: [{ url: "/api/og?title=Gameistan+Pro", width: 1200, height: 630 }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: titleAbsolute,
-      description: homeDescription,
-      images: ["/api/og?title=Gameistan+Pro"],
-    },
-  };
 }
 
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const sp = await searchParams;
-  const requested = parseHomePage(sp.page);
-  const { page: validPage } = getHomepageGamesPage(
-    requested,
-    HOMEPAGE_GAMES_PER_PAGE,
+function HomeReviewSchema() {
+  const reviews = getSiteReviews();
+  const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: siteConfig.name,
+        url: BASE(),
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: avg.toFixed(1),
+          reviewCount: reviews.length,
+          bestRating: "5",
+          worstRating: "1",
+        },
+      }}
+    />
   );
-  if (validPage !== requested) {
-    redirect(validPage <= 1 ? "/" : `/?page=${validPage}`);
-  }
-  const pageUrl = absoluteUrl(homeCanonicalPath(validPage));
+}
 
-  const webPageSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "@id": `${pageUrl}#webpage`,
-    url: pageUrl,
-    name: siteConfig.defaultTitle,
-    description: homeDescription,
-    isPartOf: { "@type": "WebSite", url: getSiteUrl(), name: siteConfig.name },
-    about: {
-      "@type": "Thing",
-      name: "Real money earning games and APK guides in Pakistan",
-    },
-    inLanguage: "en-PK",
-  };
+function HowToSchema() {
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        name: "How to Download & Install Earning Game APKs in Pakistan",
+        description:
+          "Step-by-step guide to download and install earning game APKs on your Android phone in Pakistan.",
+        step: [
+          {
+            "@type": "HowToStep",
+            position: 1,
+            name: "Choose a Game",
+            text: "Browse our collection and pick an earning game that matches your interest — casino, color prediction, or sports betting.",
+          },
+          {
+            "@type": "HowToStep",
+            position: 2,
+            name: "Download the APK",
+            text: "Click the 'Download APK' button on the game page. The APK file will start downloading to your phone.",
+          },
+          {
+            "@type": "HowToStep",
+            position: 3,
+            name: "Enable Unknown Sources",
+            text: "Go to Settings > Security > Install Unknown Apps and enable it for your browser.",
+          },
+          {
+            "@type": "HowToStep",
+            position: 4,
+            name: "Install the APK",
+            text: "Open the downloaded APK file and tap Install. Wait for installation to complete.",
+          },
+          {
+            "@type": "HowToStep",
+            position: 5,
+            name: "Sign Up & Claim Bonus",
+            text: "Open the app, create an account, and claim your free signup bonus. Start playing and earn real money!",
+          },
+        ],
+      }}
+    />
+  );
+}
+
+async function StatsSection() {
+  const [totalDownloads, totalGames] = await Promise.all([
+    getTotalDownloads(),
+    getTotalGamesCount(),
+  ]);
 
   return (
+    <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-2 font-heading text-3xl font-bold text-primary">
+          <Download className="h-7 w-7" />
+          {totalDownloads.toLocaleString()}+
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">Total Downloads</p>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-2 font-heading text-3xl font-bold text-accent">
+          <Shield className="h-7 w-7" />
+          {totalGames}+
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">Verified Apps</p>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-2 font-heading text-3xl font-bold text-yellow-400">
+          <Star className="h-7 w-7" />
+          4.8/5
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">Avg Rating</p>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-2 font-heading text-3xl font-bold text-green-400">
+          <RefreshCw className="h-7 w-7" />
+          Daily
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">Updates</p>
+      </div>
+    </div>
+  );
+}
+
+async function FeaturedSection() {
+  const featured = await getFeaturedGames(6);
+  if (featured.length === 0) return null;
+
+  return (
+    <section>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="font-heading text-2xl font-bold">
+            Top Earning Games Pakistan 2026 – Free Bonus
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Download the highest-rated earning apps with free signup bonuses up
+            to Rs 1000
+          </p>
+        </div>
+      </div>
+      <GameGrid games={featured} />
+    </section>
+  );
+}
+
+async function LatestSection() {
+  const latest = await getLatestGames(12);
+  if (latest.length === 0) return null;
+
+  return (
+    <section>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="font-heading text-2xl font-bold">
+            Latest Earning Apps & Casino APKs
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Newest earning game APK downloads with JazzCash & Easypaisa support
+          </p>
+        </div>
+      </div>
+      <GameGrid games={latest} />
+    </section>
+  );
+}
+
+async function CasinoSection() {
+  const { games } = await getGamesByCategory("casino-games", 1, 6);
+  if (games.length === 0) return null;
+
+  return (
+    <section>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="font-heading text-2xl font-bold">
+            Casino Game APKs – Slots, Teen Patti & Live Casino
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Best casino games for Pakistan with real money withdrawals
+          </p>
+        </div>
+        <Link href="/category/casino-games">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-primary hover:text-primary/80"
+          >
+            View All <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
+      <GameGrid games={games} columns={3} />
+    </section>
+  );
+}
+
+function SiteReviewsSection() {
+  const reviews = getSiteReviews();
+  return <UserReviews reviews={reviews} gameName={siteConfig.name} />;
+}
+
+function WhyChooseUs() {
+  const features = [
+    {
+      icon: Shield,
+      title: "Verified & Safe APKs",
+      desc: "Every APK is scanned for malware. We test each app before listing. 100% safe downloads guaranteed.",
+    },
+    {
+      icon: Zap,
+      title: "Free Signup Bonuses",
+      desc: "Get Rs 200 to Rs 1000 free bonus on signup. No deposit required. Start earning immediately.",
+    },
+    {
+      icon: CreditCard,
+      title: "JazzCash & Easypaisa",
+      desc: "All apps support Pakistani payment methods. Withdraw earnings to JazzCash, Easypaisa, or bank.",
+    },
+    {
+      icon: Smartphone,
+      title: "Works on Budget Phones",
+      desc: "Optimized APKs from 8 MB to 150 MB. Works on Android 5.0+ with 2G/3G/4G connections.",
+    },
+    {
+      icon: RefreshCw,
+      title: "Updated Daily",
+      desc: "New apps, updated links, and fresh reviews every day. Never miss a new earning opportunity.",
+    },
+    {
+      icon: Star,
+      title: "Real User Reviews",
+      desc: "Honest reviews from Pakistani players. See real earnings, withdrawal proofs, and tips.",
+    },
+  ];
+
+  return (
+    <section>
+      <h2 className="mb-2 text-center font-heading text-2xl font-bold">
+        Why Pakistani Players Trust {siteConfig.name}
+      </h2>
+      <p className="mb-8 text-center text-sm text-muted-foreground">
+        The most reliable source for earning game APK downloads in Pakistan since
+        2024
+      </p>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {features.map((f) => (
+          <div
+            key={f.title}
+            className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/30"
+          >
+            <f.icon className="mb-3 h-8 w-8 text-primary" />
+            <h3 className="mb-1 font-heading text-sm font-semibold">{f.title}</h3>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              {f.desc}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function HowToDownload() {
+  const steps = [
+    {
+      step: 1,
+      title: "Choose a Game",
+      desc: "Browse our collection of verified earning games. Each app shows ratings, reviews, and bonus info.",
+    },
+    {
+      step: 2,
+      title: "Download APK",
+      desc: "Tap the 'Download APK' button. The file downloads directly — no redirects or ads.",
+    },
+    {
+      step: 3,
+      title: "Install on Android",
+      desc: "Enable 'Install from Unknown Sources' in settings. Open the APK and tap Install.",
+    },
+    {
+      step: 4,
+      title: "Sign Up & Earn",
+      desc: "Create your account, claim your free bonus (Rs 200–1000), and start earning real money!",
+    },
+  ];
+
+  return (
+    <section>
+      <h2 className="mb-2 text-center font-heading text-2xl font-bold">
+        How to Download Earning Game APKs
+      </h2>
+      <p className="mb-8 text-center text-sm text-muted-foreground">
+        Start earning real money in under 2 minutes
+      </p>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {steps.map((s) => (
+          <div
+            key={s.step}
+            className="relative rounded-xl border border-border bg-card p-5 text-center"
+          >
+            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full gradient-primary text-lg font-bold text-white">
+              {s.step}
+            </div>
+            <h3 className="mb-1 font-heading text-sm font-semibold">{s.title}</h3>
+            <p className="text-xs text-muted-foreground">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PopularKeywords() {
+  const keywords = [
+    "788win download",
+    "663bet APK",
+    "jz777 game",
+    "Qz786 app",
+    "color prediction Pakistan",
+    "Teen Patti real money",
+    "earning app JazzCash",
+    "casino game APK 2026",
+    "free bonus earning app",
+    "online earning Pakistan",
+    "PkrSpin poker",
+    "cd22 casino",
+    "88fd cashback",
+    "877bet daily bonus",
+    "earning games download",
+    "real money games Pakistan",
+  ];
+
+  return (
+    <section>
+      <h2 className="mb-4 font-heading text-lg font-bold text-muted-foreground">
+        Popular Searches
+      </h2>
+      <div className="flex flex-wrap gap-2">
+        {keywords.map((kw) => (
+          <span
+            key={kw}
+            className="cursor-default rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+          >
+            {kw}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function InterlinksFooter() {
+  const links = [
+    { label: "788win Game", href: "/788win-game" },
+    { label: "663bet Game", href: "/663bet-game" },
+    { label: "jz777 Game", href: "/jz777-game" },
+    { label: "88fd Game", href: "/88fd-game" },
+    { label: "Qz786 Game", href: "/qz786-game" },
+    { label: "877bet Game", href: "/877bet-game" },
+    { label: "PkrSpin Game", href: "/pkrspin-game" },
+    { label: "cd22 Game", href: "/cd22-game" },
+    { label: "Bet877 Game", href: "/bet877-game" },
+  ];
+
+  return (
+    <section className="rounded-xl border border-border bg-card p-6">
+      <h2 className="mb-4 font-heading text-lg font-bold">
+        Download All Earning Games APK Pakistan 2026
+      </h2>
+      <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+        {links.map((l) => (
+          <Link
+            key={l.href}
+            href={l.href}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary"
+          >
+            <CheckCircle className="h-4 w-4 text-green-500" />
+            {l.label} – Download APK
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default function HomePage() {
+  return (
     <>
-      <JsonLd data={webPageSchema} />
-      <div className="flex flex-col gap-14 md:gap-20">
-        <HeroSection />
-        <HomeDirectoryStats />
-        <HomeFeaturedGamesSection page={validPage} />
-        <HomeHowToSection />
-        <UserReviewsSection />
-        <GeneralGuidesSection />
-        <WhyChooseSection />
-        <SafeDownloadGuideSection />
+      <FAQSchema faqs={homeFAQs} />
+      <HomeCollectionSchema />
+      <HomeReviewSchema />
+      <HowToSchema />
+
+      <section className="relative overflow-hidden border-b border-border bg-linear-to-b from-primary/5 to-transparent py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          <h1 className="mx-auto max-w-3xl font-heading text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
+            Pakistan&apos;s #1{" "}
+            <span className="text-primary">Earning Games</span> &{" "}
+            <span className="text-accent">APK Downloads</span>
+            <span className="mt-2 block text-xl font-semibold text-yellow-400 md:text-2xl">
+              Free Signup Bonus Rs 500–1000
+            </span>
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            Download verified earning apps & casino games. 788win, 663bet,
+            jz777, Qz786 & more. Safe APKs with instant JazzCash & Easypaisa
+            withdrawals. Updated daily in 2026.
+          </p>
+
+          <form action="/search" className="mx-auto mt-8 flex max-w-lg gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                name="q"
+                placeholder="Search earning games, casino APKs..."
+                className="h-12 rounded-xl border-border bg-card pl-10"
+              />
+            </div>
+            <Button
+              type="submit"
+              className="h-12 rounded-xl px-6 text-white gradient-primary hover:opacity-95"
+            >
+              Search
+            </Button>
+          </form>
+
+          <div className="mt-12">
+            <Suspense
+              fallback={<div className="h-20 animate-pulse rounded bg-muted" />}
+            >
+              <StatsSection />
+            </Suspense>
+          </div>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-7xl space-y-16 px-4 py-12 sm:px-6 lg:px-8">
+        <section className="mx-auto max-w-3xl text-center">
+          <p className="leading-relaxed text-muted-foreground">
+            {siteConfig.name} is Pakistan&apos;s most trusted directory for real money
+            gaming apps in 2026. We review and verify every APK — from color
+            prediction to casino platforms. All apps listed here support
+            Pakistani payment methods including JazzCash, Easypaisa, and bank
+            transfers. Browse our categories for casino games, earning apps, and
+            tools — each with detailed download guides, safety reviews, and user
+            ratings. Every app features a free signup bonus from Rs 200 to Rs
+            1000 — download and start earning today.
+          </p>
+        </section>
+
+        <Suspense fallback={<GridSkeleton />}>
+          <FeaturedSection />
+        </Suspense>
+
+        <HowToDownload />
+
+        <Suspense fallback={<GridSkeleton />}>
+          <CasinoSection />
+        </Suspense>
+
+        <WhyChooseUs />
+
+        <Suspense fallback={<GridSkeleton />}>
+          <LatestSection />
+        </Suspense>
+
+        <SiteReviewsSection />
+
+        <InterlinksFooter />
+
+        <section>
+          <h2 className="mb-6 font-heading text-2xl font-bold">
+            Frequently Asked Questions – Earning Games Pakistan
+          </h2>
+          <div className="mx-auto max-w-3xl">
+            <FAQAccordion items={homeFAQs} />
+          </div>
+        </section>
+
+        <PopularKeywords />
       </div>
     </>
+  );
+}
+
+function GridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="h-24 animate-pulse rounded-xl bg-muted" />
+      ))}
+    </div>
   );
 }

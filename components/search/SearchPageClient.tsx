@@ -48,7 +48,7 @@ export function SearchPageClient({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search apps, games, guides…"
-          className="w-full rounded-xl border border-border-subtle bg-bg-card/80 px-4 py-3 text-text placeholder:text-text-muted focus:border-accent focus:outline-none"
+          className="w-full rounded-xl border border-border bg-card px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
         />
       </label>
       <SearchResults items={results} />

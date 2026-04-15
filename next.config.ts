@@ -40,6 +40,36 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/category/tools",
+        destination: "/apps?category=tools",
+        permanent: false,
+      },
+      {
+        source: "/category/tools/page/:page",
+        destination: "/apps?category=tools",
+        permanent: false,
+      },
+      {
+        source: "/categories/tools",
+        destination: "/apps?category=tools",
+        permanent: false,
+      },
+      {
+        source: "/categories/:category",
+        destination: "/category/:category",
+        permanent: true,
+      },
+      {
+        source: "/categories/:category/page/:page",
+        destination: "/category/:category/page/:page",
+        permanent: true,
+      },
+      {
+        source: "/terms-conditions",
+        destination: "/terms",
+        permanent: true,
+      },
+      {
         source: "/guides/777taz-game-apk-pakistan",
         destination: "/777poker-game",
         permanent: true,

@@ -1,35 +1,101 @@
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { Gamepad2, Menu, Search } from "lucide-react";
 
-import { SiteLogoLink } from "@/components/brand/SiteLogoLink";
-import { MobileNav } from "@/components/layout/MobileNav";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { SITE_LOGO } from "@/lib/site-media";
+import { siteConfig } from "@/lib/seo";
 
-const nav = [
-  { href: "/apps", label: "Apps" },
-  { href: "/games", label: "Games" },
-  { href: "/guides", label: "Guides" },
-  { href: "/search", label: "Search" },
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/category/casino-games", label: "Casino Games" },
+  { href: "/category/earning-apps", label: "Earning Apps" },
+  { href: "/about", label: "About" },
 ];
 
 export function Header() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <header className="sticky top-0 z-30 border-b border-border-subtle/80 bg-bg-deep/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <SiteLogoLink priority />
-        <nav className="hidden items-center gap-6 md:flex">
-          {nav.map((l) => (
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-heading text-xl font-bold"
+        >
+          <Image
+            src={SITE_LOGO.src}
+            alt={SITE_LOGO.alt}
+            width={36}
+            height={36}
+            className="h-9 w-9 shrink-0 object-contain"
+            priority
+          />
+          <span>
+            Gameistan<span className="text-primary"> Pro</span>
+          </span>
+          <span className="sr-only">{siteConfig.name}</span>
+        </Link>
+
+        <nav className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) => (
             <Link
-              key={l.href}
-              href={l.href}
-              className="text-sm font-medium text-text-muted transition hover:text-accent"
+              key={link.href}
+              href={link.href}
+              className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              {l.label}
+              {link.label}
             </Link>
           ))}
         </nav>
+
         <div className="flex items-center gap-1">
           <ThemeToggle />
-          <MobileNav />
+          <Link href="/search">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Search className="h-5 w-5" />
+              <span className="sr-only">Search</span>
+            </Button>
+          </Link>
+
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger className="inline-flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Menu</span>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72 border-border bg-card">
+              <SheetTitle className="flex items-center gap-2 p-4 font-heading text-lg">
+                <Gamepad2 className="h-5 w-5 text-primary" />
+                Menu
+              </SheetTitle>
+              <nav className="flex flex-col gap-1 px-4">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>

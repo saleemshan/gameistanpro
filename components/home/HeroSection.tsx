@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { HeroSearch } from "@/components/home/HeroSearch";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { SITE_HERO_IMAGE } from "@/lib/site-media";
 
 export function HeroSection() {
@@ -50,12 +51,18 @@ export function HeroSection() {
             transition={{ delay: 0.14, duration: 0.45 }}
             className="mt-8 flex flex-wrap gap-3"
           >
-            <Button asChild size="lg" className="font-display">
-              <Link href="/games">Browse games</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="font-display">
-              <Link href="/guides">Read guides</Link>
-            </Button>
+            <Link
+              href="/games"
+              className={cn(buttonVariants({ size: "lg" }), "font-heading")}
+            >
+              Browse games
+            </Link>
+            <Link
+              href="/guides"
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }), "font-heading")}
+            >
+              Read guides
+            </Link>
           </motion.div>
         </div>
         <motion.div

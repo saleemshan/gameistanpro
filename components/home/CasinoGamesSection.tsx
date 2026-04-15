@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 import { AppGrid } from "@/components/listing/AppGrid";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { gameToCardModel } from "@/lib/card-mappers";
 import { getFeaturedGamesInCategory } from "@/lib/content";
 
@@ -14,9 +15,12 @@ export function CasinoGamesSection() {
         <h2 className="font-display text-2xl font-bold text-text">
           Top casino games in Pakistan 2026
         </h2>
-        <Button asChild variant="ghost">
-          <Link href="/games?category=casino-games">View more</Link>
-        </Button>
+        <Link
+          href="/games?category=casino-games"
+          className={cn(buttonVariants({ variant: "ghost", size: "default" }), "font-heading")}
+        >
+          View more
+        </Link>
       </div>
       <AppGrid items={cards} />
     </section>

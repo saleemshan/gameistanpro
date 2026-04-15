@@ -20,13 +20,13 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <article className="mx-auto max-w-3xl space-y-8">
-      <h1 className="font-display text-3xl font-bold text-text md:text-4xl">
+      <h1 className="font-heading text-3xl font-bold text-foreground md:text-4xl">
         About {siteConfig.name}
       </h1>
-      <p className="text-sm text-text-muted">Last updated: 13 April 2026</p>
+      <p className="text-sm text-muted-foreground">Last updated: 13 April 2026</p>
 
-      <section className="space-y-3 text-text-muted">
-        <h2 className="font-display text-xl font-semibold text-text">Mission</h2>
+      <section className="space-y-3 text-muted-foreground">
+        <h2 className="font-heading text-xl font-semibold text-foreground">Mission</h2>
         <p>
           {siteConfig.name} publishes independent, Pakistan-focused explainers on real-money style
           mobile games, APK sideloading, and wallet hygiene (including JazzCash and EasyPaisa
@@ -37,9 +37,9 @@ export default function AboutPage() {
 
       <section
         id="editorial-team"
-        className="space-y-4 text-text-muted"
+        className="space-y-4 text-muted-foreground"
       >
-        <h2 className="font-display text-xl font-semibold text-text">
+        <h2 className="font-heading text-xl font-semibold text-foreground">
           Editorial team
         </h2>
         <p className="text-sm">
@@ -48,8 +48,8 @@ export default function AboutPage() {
           profiles; all content is edited under the {siteConfig.name} masthead.
         </p>
         <ul className="space-y-4">
-          <li className="rounded-xl border border-border-subtle bg-bg-card/40 p-4">
-            <p className="font-display font-semibold text-text">Omar Siddiqui</p>
+          <li className="rounded-xl border border-border bg-card/50 p-4">
+            <p className="font-heading font-semibold text-foreground">Omar Siddiqui</p>
             <p className="text-xs text-accent">Lead APK analyst</p>
             <p className="mt-2 text-sm">
               Checks install flows, mirror hygiene, and version/size consistency across
@@ -57,16 +57,16 @@ export default function AboutPage() {
               confirmed.
             </p>
           </li>
-          <li className="rounded-xl border border-border-subtle bg-bg-card/40 p-4">
-            <p className="font-display font-semibold text-text">Fatima Noor</p>
+          <li className="rounded-xl border border-border bg-card/50 p-4">
+            <p className="font-heading font-semibold text-foreground">Fatima Noor</p>
             <p className="text-xs text-accent">Wallet &amp; safety editor</p>
             <p className="mt-2 text-sm">
               Leads JazzCash / EasyPaisa explainers, scam-pattern callouts, and CNIC/OTP
               hygiene copy on money pages. Works with the fake-app and safe-APK guides.
             </p>
           </li>
-          <li className="rounded-xl border border-border-subtle bg-bg-card/40 p-4">
-            <p className="font-display font-semibold text-text">Bilal Hussain</p>
+          <li className="rounded-xl border border-border bg-card/50 p-4">
+            <p className="font-heading font-semibold text-foreground">Bilal Hussain</p>
             <p className="text-xs text-accent">Guides &amp; long-form editor</p>
             <p className="mt-2 text-sm">
               Structures category hubs (earning games, colour prediction, no-investment
@@ -77,8 +77,8 @@ export default function AboutPage() {
         </ul>
       </section>
 
-      <section className="space-y-3 text-text-muted">
-        <h2 className="font-display text-xl font-semibold text-text">
+      <section className="space-y-3 text-muted-foreground">
+        <h2 className="font-heading text-xl font-semibold text-foreground">
           How we build listings
         </h2>
         <p>
@@ -93,8 +93,8 @@ export default function AboutPage() {
         </p>
       </section>
 
-      <section className="space-y-3 text-text-muted">
-        <h2 className="font-display text-xl font-semibold text-text">Responsible use</h2>
+      <section className="space-y-3 text-muted-foreground">
+        <h2 className="font-heading text-xl font-semibold text-foreground">Responsible use</h2>
         <p>
           Gambling-style products carry financial and legal risk. We include age and
           responsible-play reminders on money pages. If play stops being fun, pause and seek local
@@ -102,8 +102,8 @@ export default function AboutPage() {
         </p>
       </section>
 
-      <section className="space-y-3 text-text-muted">
-        <h2 className="font-display text-xl font-semibold text-text">Contact</h2>
+      <section className="space-y-3 text-muted-foreground">
+        <h2 className="font-heading text-xl font-semibold text-foreground">Contact</h2>
         <p>
           Editorial and corrections:{" "}
           <a className="text-accent hover:underline" href={`mailto:${getContactEmail()}`}>

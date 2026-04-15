@@ -13,8 +13,8 @@ export function InstallSteps({
   if (!steps.length) return null;
 
   const howToName = productTitle?.trim()
-    ? `How to install ${productTitle.trim()} on Android`
-    : "Install steps";
+    ? `How to download and install ${productTitle.trim()} on Android`
+    : "How to download and install on Android";
 
   const howTo = {
     "@context": "https://schema.org",
@@ -29,26 +29,26 @@ export function InstallSteps({
   };
 
   return (
-    <section id="install" className="scroll-mt-24 space-y-4">
+    <section id="how-to-download" className="scroll-mt-24 space-y-4">
       <JsonLd data={howTo} />
-      <h2 className="flex items-center gap-2 font-display text-xl font-bold text-text">
-        <ListOrdered className="size-5 text-accent" />
+      <h2 className="flex items-center gap-2 font-heading text-xl font-bold text-foreground">
+        <ListOrdered className="size-5 text-primary" />
         {productTitle?.trim()
-          ? `How to install ${productTitle.trim()}`
-          : "Install steps"}
+          ? `How to download & install ${productTitle.trim()}`
+          : "How to download & install"}
       </h2>
       <ol className="space-y-4">
         {steps.map((s, i) => (
           <li
             key={s.title}
-            className="flex gap-4 rounded-xl border border-border-subtle bg-bg-card/50 p-4"
+            className="flex gap-4 rounded-xl border border-border bg-card/70 p-4"
           >
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-dim font-mono text-sm font-bold text-accent">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-sm font-bold text-accent">
               {i + 1}
             </span>
             <div>
-              <h3 className="font-display font-semibold text-text">{s.title}</h3>
-              <p className="mt-1 text-sm text-text-muted">{s.description}</p>
+              <h3 className="font-heading font-semibold text-foreground">{s.title}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{s.description}</p>
             </div>
           </li>
         ))}

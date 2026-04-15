@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 // SEO FIX: Matches primary content CDN / brand host used in MDX cover images.
 const PRODUCTION_FALLBACK_ORIGIN = "https://gameistan.com.pk";
 
@@ -11,6 +13,8 @@ export const siteConfig = {
     "Independent guides to real-money earning games in Pakistan—color prediction & casino APKs, JazzCash / EasyPaisa context, safe installs, and PKR-focused reviews.",
   locale: "en_PK",
 } as const;
+
+export const SITE_NAME = siteConfig.name;
 
 /** Calendar year for metadata freshness (not app version data). */
 export function getMetadataYear(now = new Date()): number {
@@ -81,6 +85,9 @@ export function getSiteUrl(): string {
   return PRODUCTION_FALLBACK_ORIGIN;
 }
 
+/** Absolute site origin for share URLs and ported EarningGames UI (evaluated at module load). */
+export const BASE_URL = getSiteUrl();
+
 export function getContactEmail(): string {
   return (
     process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "contact@gameistan.com.pk"
@@ -118,4 +125,42 @@ export function buildListingSearchPath(
   if (opts.page && opts.page > 1) sp.set("page", String(opts.page));
   const q = sp.toString();
   return q ? `${pathname}?${q}` : pathname;
+}
+
+const EARNING_CATEGORY_LABELS: Record<string, string> = {
+  "casino-games": "Casino Games",
+  "earning-apps": "Earning Apps",
+  general: "General",
+};
+
+/** Labels for migrated `/category/[slug]` IA (EarningGamesApk parity). */
+export function getCategoryLabel(category: string): string {
+  return EARNING_CATEGORY_LABELS[category] ?? category.replace(/-/g, " ");
+}
+
+export function generateCategoryMetadata(
+  category: string,
+  page: number = 1,
+): Metadata {
+  const label = getCategoryLabel(category);
+  const path =
+    page > 1 ? `/category/${category}/page/${page}` : `/category/${category}`;
+  const canonical = absoluteUrl(path);
+  const title =
+    page > 1
+      ? `${label} – Page ${page} | ${siteConfig.name}`
+      : `${label} – Download Best APKs Pakistan | ${siteConfig.name}`;
+  return {
+    title,
+    description: `Browse and download the best ${label.toLowerCase()} APKs for Pakistan. Verified safe downloads, updated daily.`,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description: `Browse verified ${label.toLowerCase()} APKs for Pakistan.`,
+      url: canonical,
+      siteName: siteConfig.name,
+    },
+    robots:
+      page > 2 ? { index: false, follow: true } : { index: true, follow: true },
+  };
 }
