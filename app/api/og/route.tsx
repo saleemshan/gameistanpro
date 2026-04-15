@@ -1,22 +1,19 @@
 import { ImageResponse } from "next/og";
 
-import { ogSearchParamsSchema } from "@/lib/schema";
-import { siteConfig } from "@/lib/seo";
+import { parseOgSearchParams } from "@/lib/og-params";
 
-export const runtime = "edge";
+/** Node runtime — Edge is capped at ~1 MB on many hosts; `@vercel/og` + deps exceed that. */
+export const runtime = "nodejs";
+
+const DEFAULT_TITLE = "Gameistan Pro";
+const DEFAULT_SUB = "Pakistan APK & games";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const parsed = ogSearchParamsSchema.safeParse({
-    title: searchParams.get("title") ?? undefined,
-    rating: searchParams.get("rating") ?? undefined,
-    subtitle: searchParams.get("subtitle") ?? undefined,
-  });
+  const { title, rating, subtitle } = parseOgSearchParams(searchParams);
 
-  const title = parsed.success ? (parsed.data.title ?? siteConfig.shortName) : siteConfig.shortName;
-  const rating = parsed.success ? parsed.data.rating : undefined;
-  const subtitle =
-    parsed.success ? (parsed.data.subtitle ?? "Pakistan APK & games") : "Pakistan APK & games";
+  const displayTitle = title?.trim() || DEFAULT_TITLE;
+  const displaySub = subtitle?.trim() || DEFAULT_SUB;
 
   return new ImageResponse(
     (
@@ -35,15 +32,15 @@ export async function GET(request: Request) {
       >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <span style={{ color: "#00ff88", fontSize: 28, fontWeight: 700 }}>
-            {siteConfig.shortName}
+            {DEFAULT_TITLE}
           </span>
           {rating ? (
             <span style={{ color: "#ffd700", fontSize: 24 }}>★ {rating}</span>
           ) : null}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1.1 }}>{title}</div>
-          <div style={{ fontSize: 28, color: "#94a3b8" }}>{subtitle}</div>
+          <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1.1 }}>{displayTitle}</div>
+          <div style={{ fontSize: 28, color: "#94a3b8" }}>{displaySub}</div>
         </div>
         <div style={{ fontSize: 20, color: "#64748b" }}>gameistan.pro editorial</div>
       </div>
