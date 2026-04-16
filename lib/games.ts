@@ -115,9 +115,17 @@ export async function getFeaturedGames(limit = 6): Promise<Game[]> {
     .slice(0, limit);
 }
 
-export async function getLatestGames(limit = 12, offset = 0): Promise<Game[]> {
+export async function getLatestGames(
+  limit = 12,
+  offset = 0,
+  /** Omit games already shown in e.g. “Featured” to avoid duplicate cards above the fold. */
+  excludeSlugs?: Set<string>,
+): Promise<Game[]> {
   const all = await getAllGames();
-  return all
+  const filtered = excludeSlugs?.size
+    ? all.filter((g) => !excludeSlugs.has(g.slug))
+    : all;
+  return filtered
     .sort(
       (a, b) =>
         (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0),

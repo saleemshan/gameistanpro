@@ -48,19 +48,21 @@ export function getTopRatedGames(limit = 6): Game[] {
     .slice(0, limit);
 }
 
-/** Homepage order: featured first, then rating / votes / recency. */
+/**
+ * Homepage paginated grid: `featured` pins first, then **newest published** (page 1 surfaces fresh
+ * listings — matches `/games?sort=latest` intent), then rating / votes as tie-breakers.
+ */
 export function getSortedHomepageGames(): Game[] {
   const featuredRank = (g: Game) => (g.featured ? 1 : 0);
   return [...getAllGames()].sort((a, b) => {
     if (featuredRank(b) !== featuredRank(a))
       return featuredRank(b) - featuredRank(a);
+    const byNew =
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    if (byNew !== 0) return byNew;
     const byRating = b.rating - a.rating;
     if (byRating !== 0) return byRating;
-    const byVotes = b.votes - a.votes;
-    if (byVotes !== 0) return byVotes;
-    return (
-      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-    );
+    return b.votes - a.votes;
   });
 }
 

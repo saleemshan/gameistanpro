@@ -244,7 +244,10 @@ async function FeaturedSection() {
 }
 
 async function LatestSection() {
-  const latest = await getLatestGames(12);
+  const featured = await getFeaturedGames(6);
+  const exclude =
+    featured.length > 0 ? new Set(featured.map((g) => g.slug)) : undefined;
+  const latest = await getLatestGames(12, 0, exclude);
   if (latest.length === 0) return null;
 
   return (
@@ -255,7 +258,7 @@ async function LatestSection() {
             Latest Earning Apps & Casino APKs
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Newest earning game APK downloads with JazzCash & Easypaisa support
+            Newest listings first—fresh APKs with JazzCash & Easypaisa support
           </p>
         </div>
       </div>
@@ -549,6 +552,10 @@ export default function HomePage() {
         </section>
 
         <Suspense fallback={<GridSkeleton />}>
+          <LatestSection />
+        </Suspense>
+
+        <Suspense fallback={<GridSkeleton />}>
           <FeaturedSection />
         </Suspense>
 
@@ -559,10 +566,6 @@ export default function HomePage() {
         </Suspense>
 
         <WhyChooseUs />
-
-        <Suspense fallback={<GridSkeleton />}>
-          <LatestSection />
-        </Suspense>
 
         <SiteReviewsSection />
 
