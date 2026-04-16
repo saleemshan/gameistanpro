@@ -21,13 +21,7 @@ import { GameCard } from "@/components/game/GameCard";
 import { GameProsConsTable } from "@/components/game/GameProsConsTable";
 import { GameSystemRequirementsTable } from "@/components/game/GameSystemRequirementsTable";
 import { GameVersionHistoryTable } from "@/components/game/GameVersionHistoryTable";
-import { ArticleSchema } from "@/components/seo/ArticleSchema";
-import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
-import { FAQPageJsonLd } from "@/components/seo/FAQPageJsonLd";
-import { FAQSchema } from "@/components/seo/FAQSchema";
-import { GameSchema } from "@/components/seo/GameSchema";
-import { ReviewSchema } from "@/components/seo/ReviewSchema";
-import { SoftwareApplicationJsonLd } from "@/components/seo/AppJsonLd";
+import { GamePageJsonLd } from "@/components/seo/GamePageJsonLd";
 import {
   contentGameToEarningGame,
   getMostViewed,
@@ -43,7 +37,6 @@ import {
 } from "@/lib/content";
 import { getPrimaryDownloadUrl } from "@/lib/download-links";
 import { resolveGameDetailExtras } from "@/lib/game-detail-extras";
-import { averageReviewRating } from "@/lib/review-average";
 import { getReviewsForGame } from "@/lib/reviews";
 import { formatPkDate } from "@/lib/utils";
 import {
@@ -70,6 +63,9 @@ export async function generateMetadata({
   const path = game.url;
   const title = buildGameMetaTitle(game);
   const description = buildGameMetaDescription(game);
+  const ogImage = absoluteUrl(
+    `/api/og?title=${encodeURIComponent(game.title)}&rating=${game.rating}`,
+  );
   return {
     title,
     description,
@@ -78,19 +74,14 @@ export async function generateMetadata({
       title,
       description,
       url: absoluteUrl(path),
-      images: [
-        {
-          url: `/api/og?title=${encodeURIComponent(game.title)}&rating=${game.rating}`,
-          width: 1200,
-          height: 630,
-        },
-      ],
+      images: [{ url: ogImage, width: 1200, height: 630 }],
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [ogImage],
     },
   };
 }
@@ -152,57 +143,31 @@ export default async function RootGameDetailPage({
   }
 
   const reviews = getReviewsForGame(slug);
-  const reviewStars =
-    reviews.length > 0 ? averageReviewRating(reviews) : Number(earningGame.rating) || 4.5;
   const categoryLabel = getCategoryLabel(earningGame.category);
-  const faqs = game.faqs.map((f) => ({
-    question: f.question,
-    answer: f.answer,
-  }));
 
   return (
     <>
-      <GameSchema game={earningGame} />
-      {faqs.length > 0 ? <FAQSchema faqs={faqs} /> : null}
-      <ArticleSchema
+      <GamePageJsonLd
         title={game.title}
-        description={game.shortDescription}
-        url={`/${slug}`}
-        image={earningGame.iconUrl || undefined}
-        datePublished={game.publishedAt}
-        dateModified={game.updatedAt}
-      />
-      <BreadcrumbSchema
-        items={[
-          { name: "Home", href: "/" },
-          { name: categoryLabel, href: `/category/${earningGame.category}` },
-          { name: game.title, href: game.url },
-        ]}
-      />
-      <ReviewSchema
-        name={game.title}
-        urlPath={game.url}
-        reviews={reviews}
-        overallRating={reviewStars}
-        totalVotes={reviews.length}
-      />
-      <SoftwareApplicationJsonLd
-        name={game.title}
-        description={game.shortDescription}
+        shortDescription={game.shortDescription}
+        longDescription={game.description}
         slugPath={game.url}
-        rating={game.rating}
-        votes={game.votes}
-        kind="game"
         coverImage={game.coverImage}
         screenshots={game.screenshots}
+        rating={game.rating}
+        votes={game.votes}
         softwareVersion={extras.displayVersion}
         fileSize={extras.displaySize}
         datePublished={game.publishedAt}
         dateModified={game.updatedAt}
         tags={game.tags}
-        categoryKey={game.category}
+        categoryKey={earningGame.category}
+        categoryLabel={categoryLabel}
+        faqs={game.faqs}
+        reviews={reviews}
+        installSteps={extras.installSteps}
+        downloadUrl={downloadHref}
       />
-      {faqs.length > 0 ? <FAQPageJsonLd faqs={game.faqs} /> : null}
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <Breadcrumb
@@ -253,6 +218,7 @@ export default async function RootGameDetailPage({
             <InstallSteps
               productTitle={game.title}
               steps={extras.installSteps}
+              includeHowToJsonLd={false}
             />
 
             <GameVersionHistoryTable

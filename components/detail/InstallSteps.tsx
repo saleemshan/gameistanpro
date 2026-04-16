@@ -5,10 +5,13 @@ import { JsonLd } from "@/components/seo/JsonLd";
 export function InstallSteps({
   steps,
   productTitle,
+  /** Set false when HowTo is emitted in a parent `GamePageJsonLd` `@graph` (avoid duplicate JSON-LD). */
+  includeHowToJsonLd = true,
 }: {
   steps: { title: string; description: string }[];
   /** When set, HowTo JSON-LD name is specific to this product (better intent match). */
   productTitle?: string;
+  includeHowToJsonLd?: boolean;
 }) {
   if (!steps.length) return null;
 
@@ -30,7 +33,7 @@ export function InstallSteps({
 
   return (
     <section id="how-to-download" className="scroll-mt-24 space-y-4">
-      <JsonLd data={howTo} />
+      {includeHowToJsonLd ? <JsonLd data={howTo} /> : null}
       <h2 className="flex items-center gap-2 font-heading text-xl font-bold text-foreground">
         <ListOrdered className="size-5 text-primary" />
         {productTitle?.trim()
