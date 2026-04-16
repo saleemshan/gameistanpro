@@ -1,5 +1,7 @@
 import type { Game as ContentGame } from "contentlayer/generated";
 
+import { formatFileSizeDisplay } from "@/lib/format-file-size";
+
 export type ProsConRow = { pro: string; con: string };
 export type SystemRequirementRow = { label: string; value: string };
 export type VersionHistoryRow = {
@@ -48,10 +50,10 @@ export function deriveDisplayVersion(slug: string, current: string | undefined):
 export function deriveDisplaySize(slug: string, current: string | undefined): string {
   const t = current?.trim().toLowerCase() ?? "";
   if (t && t !== "0mb" && t !== "0 mb" && !/^0/.test(t.replace(/\s/g, ""))) {
-    return current!.trim();
+    return formatFileSizeDisplay(current!.trim());
   }
   const mb = 22 + (hashString(slug + "size") % 78);
-  return `~${mb} MB`;
+  return formatFileSizeDisplay(`~${mb} MB`);
 }
 
 const PRO_TEMPLATES = [

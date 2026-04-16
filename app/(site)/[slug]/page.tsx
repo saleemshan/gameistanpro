@@ -14,6 +14,7 @@ import { GameHero } from "@/components/game/GameHero";
 import { DownloadButton } from "@/components/game/DownloadButton";
 import { RelatedGames } from "@/components/game/RelatedGames";
 import { ReportModal } from "@/components/game/ReportModal";
+import { ReviewForm } from "@/components/game/ReviewForm";
 import { UserReviews } from "@/components/game/UserReviews";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { GameCard } from "@/components/game/GameCard";
@@ -42,6 +43,7 @@ import {
 } from "@/lib/content";
 import { getPrimaryDownloadUrl } from "@/lib/download-links";
 import { resolveGameDetailExtras } from "@/lib/game-detail-extras";
+import { averageReviewRating } from "@/lib/review-average";
 import { getReviewsForGame } from "@/lib/reviews";
 import { formatPkDate } from "@/lib/utils";
 import {
@@ -150,6 +152,8 @@ export default async function RootGameDetailPage({
   }
 
   const reviews = getReviewsForGame(slug);
+  const reviewStars =
+    reviews.length > 0 ? averageReviewRating(reviews) : Number(earningGame.rating) || 4.5;
   const categoryLabel = getCategoryLabel(earningGame.category);
   const faqs = game.faqs.map((f) => ({
     question: f.question,
@@ -175,15 +179,13 @@ export default async function RootGameDetailPage({
           { name: game.title, href: game.url },
         ]}
       />
-      {reviews.length > 0 ? (
-        <ReviewSchema
-          name={game.title}
-          urlPath={game.url}
-          reviews={reviews}
-          overallRating={Number(earningGame.rating) || 4.5}
-          totalVotes={earningGame.totalVotes || reviews.length}
-        />
-      ) : null}
+      <ReviewSchema
+        name={game.title}
+        urlPath={game.url}
+        reviews={reviews}
+        overallRating={reviewStars}
+        totalVotes={reviews.length}
+      />
       <SoftwareApplicationJsonLd
         name={game.title}
         description={game.shortDescription}
@@ -218,11 +220,10 @@ export default async function RootGameDetailPage({
               <AppDescription code={game.body.code} />
             </article>
 
-            {reviews.length > 0 ? (
-              <section id="reviews" className="scroll-mt-28">
-                <UserReviews reviews={reviews} gameName={game.title} />
-              </section>
-            ) : null}
+            <section id="reviews" className="scroll-mt-28 space-y-8">
+              <ReviewForm gameSlug={slug} gameTitle={game.title} />
+              <UserReviews reviews={reviews} gameName={game.title} />
+            </section>
 
             <GameProsConsTable
               rows={extras.prosAndCons}
@@ -289,7 +290,7 @@ export default async function RootGameDetailPage({
           <aside className="hidden lg:block">
             <div className="sticky top-20 space-y-6">
               <DetailPageOutline
-                hasReviews={reviews.length > 0}
+                hasReviews
                 hasScreenshots={game.screenshots.length > 0}
                 hasInstall={extras.installSteps.length > 0}
                 hasFaq={game.faqs.length > 0}

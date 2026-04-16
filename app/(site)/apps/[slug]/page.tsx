@@ -24,6 +24,7 @@ import {
   buildAppMetaTitle,
 } from "@/lib/seo";
 import { getPrimaryDownloadUrl } from "@/lib/download-links";
+import { formatFileSizeDisplay } from "@/lib/format-file-size";
 import { formatPkDate } from "@/lib/utils";
 
 export const revalidate = 86400;
@@ -84,6 +85,7 @@ export default async function AppDetailPage({
 
   const related = getRelatedApps(app).map(appToCardModel);
   const downloadHref = getPrimaryDownloadUrl(app.downloadLinks);
+  const displaySize = formatFileSizeDisplay(app.size);
 
   const sectionTitle =
     "font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl";
@@ -108,7 +110,7 @@ export default async function AppDetailPage({
           coverImage={app.coverImage}
           screenshots={app.screenshots}
           softwareVersion={app.version}
-          fileSize={app.size}
+          fileSize={displaySize}
           datePublished={app.publishedAt}
           dateModified={app.updatedAt}
           tags={app.tags}
@@ -124,7 +126,7 @@ export default async function AppDetailPage({
           votes={app.votes}
           downloadHref={downloadHref}
           downloads={app.downloads}
-          size={app.size}
+          size={displaySize}
           requirements={app.requirements}
           version={app.version}
           isNew={app.isNew}
@@ -152,7 +154,7 @@ export default async function AppDetailPage({
         <section id="download" className="scroll-mt-28 space-y-4">
           <h2 className={sectionTitle}>Download</h2>
           <p className="text-sm text-muted-foreground">
-            Updated {formatPkDate(app.updatedAt)} · verify file size ({app.size}) after download.
+            Updated {formatPkDate(app.updatedAt)} · verify file size ({displaySize}) after download.
           </p>
           <DownloadMirrorLinks links={app.downloadLinks} />
         </section>

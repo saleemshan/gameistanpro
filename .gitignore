@@ -34,6 +34,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# Local-only review submissions (move lines to data/user-reviews/approved/*.json after moderation)
+/data/user-reviews/pending/*.jsonl
+
 # vercel
 .vercel
 

@@ -5,8 +5,9 @@ import Link from "next/link";
 import { FilterBar } from "@/components/listing/FilterBar";
 import { Badge } from "@/components/ui/Badge";
 import { AppsListingSearch } from "@/components/search/AppsListingSearch";
+import { GuidesCollectionJsonLd } from "@/components/seo/GuidesCollectionJsonLd";
 import { getAllGuides, getAllSearchableItems } from "@/lib/content";
-import { absoluteUrl, buildListingSearchPath } from "@/lib/seo";
+import { absoluteUrl, buildListingSearchPath, getDefaultOgImagePath, siteConfig } from "@/lib/seo";
 import { formatPkDate } from "@/lib/utils";
 import type { Guide } from "contentlayer/generated";
 
@@ -39,11 +40,27 @@ export async function generateMetadata({
     ? `${GUIDE_CAT_LABEL[cat]} gaming guides – Pakistan APK & casino tips`
     : "Gaming guides & casino tips for Pakistani players";
   const description = `${guideCount} editorial guides: APK safety, fake-app signals, JazzCash / EasyPaisa flows, and seasonal promos for Pakistani Android users.`;
+  const ogImage = absoluteUrl(getDefaultOgImagePath());
   return {
     title,
     description,
     alternates: { canonical },
-    openGraph: { title, description, url: canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      siteName: siteConfig.name,
+      type: "website",
+      locale: siteConfig.locale.replace("_", "-"),
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -77,8 +94,21 @@ export default async function GuidesPage({
     })),
   ];
 
+  const path = buildListingSearchPath("/guides", { category: cat });
+  const listTitle = cat
+    ? `${GUIDE_CAT_LABEL[cat]} guides & tips for Pakistani players`
+    : "Gaming guides & casino tips for Pakistani players";
+  const listDescription =
+    "Editorial articles covering APK safety, fake apps, and wallet hygiene for Pakistani Android users.";
+
   return (
     <div className="space-y-8">
+      <GuidesCollectionJsonLd
+        guides={list}
+        canonicalPath={path}
+        name={listTitle}
+        description={listDescription}
+      />
       <div>
         <h1 className="font-heading text-3xl font-bold text-foreground md:text-4xl">
           {cat

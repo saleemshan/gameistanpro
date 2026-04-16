@@ -6,15 +6,18 @@ import { FAQSection } from "@/components/detail/FAQSection";
 import { ShareButtons } from "@/components/detail/ShareButtons";
 import { UserReviews } from "@/components/game/UserReviews";
 import { Breadcrumb } from "@/components/layout/Breadcrumb";
-import { TableOfContents } from "@/components/mdx/TableOfContents";
+import {
+  GuideTocMobile,
+  GuideTocProvider,
+  GuideTocRail,
+} from "@/components/guides/GuideTableOfContents";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { FAQPageJsonLd } from "@/components/seo/FAQPageJsonLd";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { ReviewSchema } from "@/components/seo/ReviewSchema";
+import { GuideBlogPostingJsonLd } from "@/components/seo/GuideBlogPostingJsonLd";
 import { getAllGuides, getGuideBySlug, getRelatedGuides } from "@/lib/content";
 import { extractTocFromMarkdown } from "@/lib/guide-toc";
 import { getSiteReviews } from "@/lib/reviews";
-import { absoluteUrl, getMetadataYear, siteConfig } from "@/lib/seo";
+import { absoluteUrl, getMetadataYear } from "@/lib/seo";
 import { formatPkDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,24 +39,29 @@ export async function generateMetadata({
   const path = `/guides/${slug}`;
   const y = getMetadataYear();
   const title = `${guide.title} (${y})`;
+  const cover = absoluteUrl(guide.coverImage);
   return {
     title,
     description: guide.description,
+    authors: [{ name: guide.author, url: absoluteUrl("/") }],
     alternates: { canonical: absoluteUrl(path) },
     openGraph: {
       title,
       description: guide.description,
       url: absoluteUrl(path),
-      images: [{ url: guide.coverImage, width: 1200, height: 630 }],
+      images: [{ url: cover, width: 1200, height: 630 }],
       type: "article",
       publishedTime: new Date(guide.publishedAt).toISOString(),
       modifiedTime: new Date(guide.updatedAt).toISOString(),
+      authors: [guide.author],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description: guide.description,
+      images: [cover],
     },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -66,8 +74,15 @@ export default async function GuideDetailPage({
   const guide = getGuideBySlug(slug);
   if (!guide) notFound();
 
-  const toc = extractTocFromMarkdown(guide.body.raw);
   const related = getRelatedGuides(guide);
+  const tocFromMdx = extractTocFromMarkdown(guide.body.raw, guide.slug);
+  const tocExtras = [
+    { id: "reviews", text: "User reviews", level: 2 },
+    ...(guide.faqs.length ? [{ id: "faq", text: "FAQ", level: 2 }] : []),
+    ...(related.length > 0
+      ? [{ id: "related-articles", text: "Related articles", level: 2 }]
+      : []),
+  ];
   const reviews = getSiteReviews();
 
   const crumbs = [
@@ -77,13 +92,7 @@ export default async function GuideDetailPage({
   ];
 
   return (
-    <article
-      className={
-        toc.length > 0
-          ? "grid gap-8 lg:grid-cols-[1fr_300px] lg:gap-10"
-          : "max-w-3xl space-y-8"
-      }
-    >
+    <>
       <BreadcrumbJsonLd
         items={[
           { name: "Home", href: "/" },
@@ -92,36 +101,17 @@ export default async function GuideDetailPage({
         ]}
       />
       <FAQPageJsonLd faqs={guide.faqs} />
-      {reviews.length > 0 ? (
-        <ReviewSchema
-          name={guide.title}
-          urlPath={guide.url}
-          reviews={reviews}
-          overallRating={
-            reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
-          }
-          totalVotes={reviews.length}
-        />
-      ) : null}
-      <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: guide.title,
-          datePublished: guide.publishedAt,
-          dateModified: guide.updatedAt,
-          author: { "@type": "Organization", name: guide.author },
-          publisher: { "@type": "Organization", name: siteConfig.name },
-          // SEO FIX: Article.image must be absolute URL; add mainEntityOfPage for clarity.
-          image: [absoluteUrl(guide.coverImage)],
-          url: absoluteUrl(guide.url),
-          mainEntityOfPage: {
-            "@type": "WebPage",
-            "@id": absoluteUrl(guide.url),
-          },
-        }}
-      />
-      <div className={toc.length > 0 ? "min-w-0 space-y-8" : "space-y-8"}>
+      <GuideBlogPostingJsonLd guide={guide} />
+      <GuideTocProvider
+        items={tocFromMdx.map((t) => ({
+          id: t.id,
+          text: t.text,
+          level: t.level,
+        }))}
+        extraItems={[...tocExtras]}
+      >
+        <article className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_290px] lg:items-start lg:gap-10">
+        <div className="min-w-0 space-y-8">
         <Breadcrumb items={crumbs} />
         <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border shadow-lg sm:aspect-[2/1] lg:aspect-[21/9]">
           <Image
@@ -145,13 +135,14 @@ export default async function GuideDetailPage({
           <p className="text-lg text-muted-foreground">{guide.excerpt}</p>
         </header>
         <ShareButtons urlPath={guide.url} title={guide.title} />
+        <GuideTocMobile />
         <GuideMDX code={guide.body.code} />
         <section id="reviews" className="scroll-mt-28">
           <UserReviews reviews={reviews} gameName={guide.title} />
         </section>
         <FAQSection faqs={guide.faqs} />
         {related.length > 0 ? (
-          <section className="space-y-3">
+          <section id="related-articles" className="scroll-mt-28 space-y-3">
             <h2 className="font-heading text-xl font-bold text-foreground">
               Related articles
             </h2>
@@ -169,17 +160,10 @@ export default async function GuideDetailPage({
             </ul>
           </section>
         ) : null}
-      </div>
-      {toc.length > 0 ? (
-        <aside className="hidden lg:block">
-          <div className="sticky top-24">
-            <TableOfContents
-              items={toc.map((t) => ({ id: t.id, text: t.text, level: t.level }))}
-              extraItems={[{ id: "reviews", text: "User reviews", level: 2 }]}
-            />
-          </div>
-        </aside>
-      ) : null}
-    </article>
+        </div>
+        <GuideTocRail />
+        </article>
+      </GuideTocProvider>
+    </>
   );
 }

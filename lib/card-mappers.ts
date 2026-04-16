@@ -2,6 +2,7 @@ import type { App, Game } from "contentlayer/generated";
 
 import type { AppCardModel } from "@/components/listing/AppCard";
 import { getPrimaryDownloadUrl } from "@/lib/download-links";
+import { formatFileSizeDisplay } from "@/lib/format-file-size";
 
 export function appToCardModel(a: App): AppCardModel {
   return {
@@ -17,7 +18,7 @@ export function appToCardModel(a: App): AppCardModel {
     isNew: a.isNew,
     featured: a.featured,
     shortDescription: a.shortDescription,
-    size: a.size,
+    size: formatFileSizeDisplay(a.size),
     downloads: a.downloads,
     directDownloadUrl: getPrimaryDownloadUrl(a.downloadLinks),
   };
@@ -37,7 +38,7 @@ export function gameToCardModel(g: Game): AppCardModel {
     isNew: g.isNew,
     featured: g.featured,
     shortDescription: g.shortDescription,
-    size: g.size,
+    size: formatFileSizeDisplay(g.size),
     downloads: g.downloads,
     directDownloadUrl: getPrimaryDownloadUrl(g.downloadLinks),
   };

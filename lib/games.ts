@@ -6,6 +6,7 @@ import {
   getGameBySlug as clGetGameBySlug,
 } from "@/lib/content";
 import { getPrimaryDownloadUrl } from "@/lib/download-links";
+import { formatFileSizeDisplay } from "@/lib/format-file-size";
 
 export type GameCategory =
   | "casino-games"
@@ -74,7 +75,7 @@ export function contentGameToEarningGame(g: ContentGame): Game {
     title: g.title,
     description: g.shortDescription || null,
     version: g.version || null,
-    fileSize: g.size || null,
+    fileSize: g.size ? formatFileSizeDisplay(g.size) : null,
     downloadCount: parseDownloadCount(g.downloads, g.views),
     rating: String(g.rating ?? 0),
     totalVotes: g.votes,

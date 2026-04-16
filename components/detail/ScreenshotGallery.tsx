@@ -21,7 +21,7 @@ export function ScreenshotGallery({
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {urls.map((src, i) => (
           <button
-            key={src}
+            key={`screenshot-${i}`}
             type="button"
             onClick={() => {
               setActive(i);
@@ -30,6 +30,7 @@ export function ScreenshotGallery({
             className="relative aspect-[9/16] overflow-hidden rounded-lg border border-border-subtle bg-bg-deep transition hover:border-accent/40"
           >
             <Image
+              key={`screenshot-img-${i}`}
               src={src}
               alt={
                 productTitle
