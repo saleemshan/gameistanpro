@@ -21,21 +21,25 @@ function headingText(node: MdastNode): string {
     .trim();
 }
 
-function isGameOrAppMdxPath(filePath: string): boolean {
-  return /[/\\](games|apps)[/\\].+\.mdx$/i.test(filePath);
+function isGameMdxPath(filePath: string): boolean {
+  return /[/\\]games[/\\].+\.mdx$/i.test(filePath);
 }
 
-/**
- * Removes a top-level `## FAQ…` / `## FAQs` block from game/app MDX so FAQSection
- * + FAQ JSON-LD (frontmatter `faqs`) are not duplicated in the article body.
- */
-export const remarkStripEmbeddedFaq: Plugin<[], MdastRoot> = () => (tree, file) => {
+/** Embedded pros/cons prose + GFM tables duplicate GameProsConsTable (YAML or derived rows). */
+function isEmbeddedProsConsHeading(text: string): boolean {
+  const t = text.trim();
+  if (/^pros\s+and\s+considerations\b/i.test(t)) return true;
+  if (/^pros\b/i.test(t) && /\bcons\b/i.test(t)) return true;
+  return /^pros\s*\/\s*cons\b/i.test(t);
+}
+
+export const remarkStripEmbeddedProsCons: Plugin<[], MdastRoot> = () => (tree, file) => {
   const fp = String(
     (file as { path?: string }).path ??
       (file as { history?: string[] }).history?.[0] ??
       "",
   );
-  if (!isGameOrAppMdxPath(fp)) return;
+  if (!isGameMdxPath(fp)) return;
 
   const ch = tree.children;
   const out: MdastNode[] = [];
@@ -45,13 +49,10 @@ export const remarkStripEmbeddedFaq: Plugin<[], MdastRoot> = () => (tree, file) 
     if (
       node.type === "heading" &&
       node.depth === 2 &&
-      /^faqs?\b/i.test(headingText(node))
+      isEmbeddedProsConsHeading(headingText(node))
     ) {
       i += 1;
-      while (
-        i < ch.length &&
-        !(ch[i].type === "heading" && ch[i].depth === 2)
-      ) {
+      while (i < ch.length && !(ch[i].type === "heading" && ch[i].depth === 2)) {
         i += 1;
       }
       continue;

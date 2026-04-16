@@ -21,43 +21,44 @@ function headingText(node: MdastNode): string {
     .trim();
 }
 
-function isGameOrAppMdxPath(filePath: string): boolean {
-  return /[/\\](games|apps)[/\\].+\.mdx$/i.test(filePath);
+function isGameAppGuideMdxPath(filePath: string): boolean {
+  return /[/\\](games|apps|guides)[/\\].+\.mdx$/i.test(filePath);
 }
 
-/**
- * Removes a top-level `## FAQ…` / `## FAQs` block from game/app MDX so FAQSection
- * + FAQ JSON-LD (frontmatter `faqs`) are not duplicated in the article body.
- */
-export const remarkStripEmbeddedFaq: Plugin<[], MdastRoot> = () => (tree, file) => {
+/** Drops `## Table of contents` and nodes until the next # / ## (layout outline / sidebar already navigates). */
+export const remarkStripManualToc: Plugin<[], MdastRoot> = () => (tree, file) => {
   const fp = String(
     (file as { path?: string }).path ??
       (file as { history?: string[] }).history?.[0] ??
       "",
   );
-  if (!isGameOrAppMdxPath(fp)) return;
+  if (!isGameAppGuideMdxPath(fp)) return;
 
-  const ch = tree.children;
-  const out: MdastNode[] = [];
+  const children = tree.children;
+  const next: MdastNode[] = [];
   let i = 0;
-  while (i < ch.length) {
-    const node = ch[i];
+  while (i < children.length) {
+    const node = children[i];
     if (
       node.type === "heading" &&
       node.depth === 2 &&
-      /^faqs?\b/i.test(headingText(node))
+      /^table of contents$/i.test(headingText(node))
     ) {
       i += 1;
       while (
-        i < ch.length &&
-        !(ch[i].type === "heading" && ch[i].depth === 2)
+        i < children.length &&
+        !(
+          children[i].type === "heading" &&
+          typeof children[i].depth === "number" &&
+          children[i].depth! <= 2
+        )
       ) {
         i += 1;
       }
       continue;
     }
-    out.push(node);
+    next.push(node);
     i += 1;
   }
-  tree.children = out;
+  tree.children = next;
 };
