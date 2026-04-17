@@ -29,6 +29,7 @@ import {
   getTopRated,
   type Game as EarningGame,
 } from "@/lib/games";
+
 import {
   getAllGames,
   getGameBySlug,
@@ -192,11 +193,15 @@ export default async function RootGameDetailPage({
 
             <GameProsConsTable
               rows={extras.prosAndCons}
-              productName={game.title.replace(/\s+APK.*$/i, "").trim() || game.title}
+              productName={
+                game.title.replace(/\s+APK.*$/i, "").trim() || game.title
+              }
             />
             <GameSystemRequirementsTable
               rows={extras.systemRequirements}
-              productName={game.title.replace(/\s+APK.*$/i, "").trim() || game.title}
+              productName={
+                game.title.replace(/\s+APK.*$/i, "").trim() || game.title
+              }
             />
 
             <div>
@@ -223,7 +228,9 @@ export default async function RootGameDetailPage({
 
             <GameVersionHistoryTable
               rows={extras.versionHistory}
-              productName={game.title.replace(/\s+APK.*$/i, "").trim() || game.title}
+              productName={
+                game.title.replace(/\s+APK.*$/i, "").trim() || game.title
+              }
             />
 
             <section className="mt-10 space-y-3">
