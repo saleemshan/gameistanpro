@@ -29,11 +29,13 @@ import {
   getTotalGamesCount,
 } from "@/lib/games";
 import { getSiteReviews } from "@/lib/reviews";
-import { absoluteUrl, siteConfig } from "@/lib/seo";
+import {
+  absoluteUrl,
+  getOrganizationSchemaId,
+  siteConfig,
+} from "@/lib/seo";
 
 export const revalidate = 3600;
-
-const BASE = () => absoluteUrl("/");
 
 const homeFAQs = [
   {
@@ -92,44 +94,29 @@ export const metadata: Metadata = {
   },
 };
 
-function HomeCollectionSchema() {
-  return (
-    <JsonLd
-      data={{
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        name: `${siteConfig.name} – Best Earning Game APKs Pakistan`,
-        description: siteConfig.description,
-        url: BASE(),
-        isPartOf: { "@type": "WebSite", name: siteConfig.name, url: BASE() },
-        about: {
-          "@type": "Thing",
-          name: "Earning Game APKs Pakistan",
-          description:
-            "Real money earning games and casino apps for Pakistani players with JazzCash and EasyPaisa support",
-        },
-      }}
-    />
-  );
-}
-
+/** Site-wide aggregate from approved reviews — merged onto `Organization` via `@id` (not `WebSite`; avoids invalid child types in GSC). */
 function HomeReviewSchema() {
   const reviews = getSiteReviews();
+  if (reviews.length === 0) return null;
   const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+  const ratingValue = Math.round(avg * 10) / 10;
   return (
     <JsonLd
       data={{
         "@context": "https://schema.org",
-        "@type": "WebSite",
-        name: siteConfig.name,
-        url: BASE(),
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: avg.toFixed(1),
-          reviewCount: reviews.length,
-          bestRating: "5",
-          worstRating: "1",
-        },
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": getOrganizationSchemaId(),
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue,
+              ratingCount: reviews.length,
+              bestRating: 5,
+              worstRating: 1,
+            },
+          },
+        ],
       }}
     />
   );
@@ -489,8 +476,7 @@ function InterlinksFooter() {
 export default function HomePage() {
   return (
     <>
-      <FAQSchema faqs={homeFAQs} />
-      <HomeCollectionSchema />
+      <FAQSchema faqs={homeFAQs} pageUrl={absoluteUrl("/")} />
       <HomeReviewSchema />
       <HowToSchema />
 

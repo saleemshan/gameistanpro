@@ -11,7 +11,9 @@ import {
   getDefaultOgImagePath,
   getGoogleSiteVerification,
   getOrgSameAs,
+  getOrganizationSchemaId,
   getSiteUrl,
+  getWebsiteSchemaId,
   siteConfig,
 } from "@/lib/seo";
 
@@ -81,27 +83,37 @@ export const metadata: Metadata = {
   },
 };
 
-// SEO FIX: Organization logo = brand mark (crawlable); sameAs from env when set.
-const orgSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: siteConfig.name,
-  url: getSiteUrl(),
-  logo: absoluteUrl(SITE_LOGO.src),
-  ...(getOrgSameAs().length ? { sameAs: getOrgSameAs() } : {}),
-};
-
-const websiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: siteConfig.name,
-  url: getSiteUrl(),
-  potentialAction: {
-    "@type": "SearchAction",
-    target: `${getSiteUrl()}/search?q={search_term_string}`,
-    "query-input": "required name=search_term_string",
-  },
-};
+// SEO: One JSON-LD root with `@graph` — a bare `[org, website]` array is not valid JSON-LD.
+function rootSiteGraphJsonLd() {
+  const origin = getSiteUrl().replace(/\/$/, "");
+  const orgId = getOrganizationSchemaId();
+  const websiteId = getWebsiteSchemaId();
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": orgId,
+        name: siteConfig.name,
+        url: origin,
+        logo: absoluteUrl(SITE_LOGO.src),
+        ...(getOrgSameAs().length ? { sameAs: getOrgSameAs() } : {}),
+      },
+      {
+        "@type": "WebSite",
+        "@id": websiteId,
+        name: siteConfig.name,
+        url: origin,
+        publisher: { "@id": orgId },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${origin}/search?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ],
+  };
+}
 
 // SEO FIX: Explicit mobile viewport (document for audits; matches Next defaults).
 export const viewport: Viewport = {
@@ -134,7 +146,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://gameistan.com.pk" />
       </head>
       <body className="flex min-h-screen flex-col bg-background font-sans text-foreground antialiased">
-        <JsonLd data={[orgSchema, websiteSchema]} />
+        <JsonLd data={rootSiteGraphJsonLd()} />
         <Providers>
           {children}
           <Analytics />

@@ -3,6 +3,7 @@ import type { Guide } from "contentlayer/generated";
 import { JsonLd } from "./JsonLd";
 import { SITE_LOGO } from "@/lib/site-media";
 import { absoluteUrl, getOrgSameAs, siteConfig } from "@/lib/seo";
+import { toPlainTextForSchema } from "@/lib/plain-text";
 
 const GUIDE_CAT_LABEL: Record<Guide["category"], string> = {
   general: "General",
@@ -71,19 +72,35 @@ export function GuideBlogPostingJsonLd({ guide }: { guide: Guide }) {
   };
   if (guide.tags.length) posting.keywords = guide.tags.join(", ");
 
-  const data = {
-    "@context": "https://schema.org",
-    "@graph": [
-      org,
-      {
-        "@type": "WebSite",
-        "@id": websiteId,
-        name: siteConfig.name,
-        url: origin,
-        publisher: { "@id": orgId },
-        inLanguage: "en-PK",
-      },
-      {
+  const hasFaq = guide.faqs.length > 0;
+
+  const webDoc: Record<string, unknown> = hasFaq
+    ? {
+        "@type": "FAQPage",
+        "@id": webpageId,
+        url: pageUrl,
+        name: guide.title,
+        description: guide.description,
+        isPartOf: { "@id": websiteId },
+        primaryImageOfPage: {
+          "@type": "ImageObject",
+          url: cover,
+          width: 1200,
+          height: 630,
+        },
+        datePublished: published,
+        dateModified: modified,
+        about: { "@id": articleId },
+        mainEntity: guide.faqs.map((f) => ({
+          "@type": "Question",
+          name: toPlainTextForSchema(f.question),
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: toPlainTextForSchema(f.answer),
+          },
+        })),
+      }
+    : {
         "@type": "WebPage",
         "@id": webpageId,
         url: pageUrl,
@@ -98,7 +115,21 @@ export function GuideBlogPostingJsonLd({ guide }: { guide: Guide }) {
         },
         datePublished: published,
         dateModified: modified,
+      };
+
+  const data = {
+    "@context": "https://schema.org",
+    "@graph": [
+      org,
+      {
+        "@type": "WebSite",
+        "@id": websiteId,
+        name: siteConfig.name,
+        url: origin,
+        publisher: { "@id": orgId },
+        inLanguage: "en-PK",
       },
+      webDoc,
       posting,
     ],
   };

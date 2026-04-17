@@ -88,6 +88,15 @@ export function getSiteUrl(): string {
 /** Absolute site origin for share URLs and ported EarningGames UI (evaluated at module load). */
 export const BASE_URL = getSiteUrl();
 
+/** Stable JSON-LD `@id` values (match root layout `Organization` / `WebSite` graph). */
+export function getOrganizationSchemaId(): string {
+  return `${getSiteUrl().replace(/\/$/, "")}/#organization`;
+}
+
+export function getWebsiteSchemaId(): string {
+  return `${getSiteUrl().replace(/\/$/, "")}/#website`;
+}
+
 export function getContactEmail(): string {
   return (
     process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "contact@gameistan.com.pk"

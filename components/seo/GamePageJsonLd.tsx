@@ -84,7 +84,6 @@ export function GamePageJsonLd({
   const breadcrumbId = `${pageUrl}#breadcrumb`;
   const orgId = `${origin}/#organization`;
   const websiteId = `${origin}/#website`;
-  const faqId = `${pageUrl}#faq`;
   const howToId = `${pageUrl}#howto`;
 
   const desc =
@@ -202,21 +201,48 @@ export function GamePageJsonLd({
   };
   if (sameAs.length) org.sameAs = sameAs;
 
-  const webPage: Record<string, unknown> = {
-    "@type": "WebPage",
-    "@id": webpageId,
-    url: pageUrl,
-    name: title,
-    description: desc,
-    isPartOf: { "@id": websiteId },
-    datePublished: published,
-    dateModified: modified,
-    inLanguage: "en-PK",
-    mainEntity: { "@id": appId },
-    breadcrumb: { "@id": breadcrumbId },
-  };
+  /**
+   * GSC "Duplicate field FAQPage": do **not** emit both `WebPage` and `FAQPage` for the same URL.
+   * `FAQPage` extends `WebPage` — use one node: `FAQPage` when FAQs exist (mainEntity = Questions,
+   * `about` = app), else `WebPage` with mainEntity = app.
+   */
+  const pageDoc: Record<string, unknown> = faqs.length
+    ? {
+        "@type": "FAQPage",
+        "@id": webpageId,
+        url: pageUrl,
+        name: title,
+        description: desc,
+        isPartOf: { "@id": websiteId },
+        datePublished: published,
+        dateModified: modified,
+        inLanguage: "en-PK",
+        breadcrumb: { "@id": breadcrumbId },
+        about: { "@id": appId },
+        mainEntity: faqs.map((f) => ({
+          "@type": "Question",
+          name: toPlainTextForSchema(f.question),
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: toPlainTextForSchema(f.answer),
+          },
+        })),
+      }
+    : {
+        "@type": "WebPage",
+        "@id": webpageId,
+        url: pageUrl,
+        name: title,
+        description: desc,
+        isPartOf: { "@id": websiteId },
+        datePublished: published,
+        dateModified: modified,
+        inLanguage: "en-PK",
+        mainEntity: { "@id": appId },
+        breadcrumb: { "@id": breadcrumbId },
+      };
   if (coverImage) {
-    webPage.primaryImageOfPage = {
+    pageDoc.primaryImageOfPage = {
       "@type": "ImageObject",
       url: absoluteUrl(coverImage),
     };
@@ -233,7 +259,7 @@ export function GamePageJsonLd({
       inLanguage: "en-PK",
     },
     mobileApp,
-    webPage,
+    pageDoc,
     {
       "@type": "BreadcrumbList",
       "@id": breadcrumbId,
@@ -245,22 +271,6 @@ export function GamePageJsonLd({
       })),
     },
   ];
-
-  if (faqs.length > 0) {
-    graph.push({
-      "@type": "FAQPage",
-      "@id": faqId,
-      url: pageUrl,
-      mainEntity: faqs.map((f) => ({
-        "@type": "Question",
-        name: toPlainTextForSchema(f.question),
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: toPlainTextForSchema(f.answer),
-        },
-      })),
-    });
-  }
 
   if (installSteps?.length) {
     graph.push({

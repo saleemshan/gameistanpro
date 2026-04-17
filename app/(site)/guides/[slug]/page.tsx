@@ -12,7 +12,6 @@ import {
   GuideTocRail,
 } from "@/components/guides/GuideTableOfContents";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
-import { FAQPageJsonLd } from "@/components/seo/FAQPageJsonLd";
 import { GuideBlogPostingJsonLd } from "@/components/seo/GuideBlogPostingJsonLd";
 import { getAllGuides, getGuideBySlug, getRelatedGuides } from "@/lib/content";
 import { extractTocFromMarkdown } from "@/lib/guide-toc";
@@ -100,7 +99,6 @@ export default async function GuideDetailPage({
           { name: guide.title, href: guide.url },
         ]}
       />
-      <FAQPageJsonLd faqs={guide.faqs} />
       <GuideBlogPostingJsonLd guide={guide} />
       <GuideTocProvider
         items={tocFromMdx.map((t) => ({
