@@ -107,6 +107,8 @@ export function GamePageJsonLd({
   const showAggregate =
     Number.isFinite(voteInt) && voteInt >= 1 && Number.isFinite(listingRating);
 
+  // Reviews are nested under `MobileApplication.review`; do not set `itemReviewed`
+  // (Google Search Console: nested parent + itemReviewed = directional conflict).
   const reviewNodes =
     reviews.length > 0
       ? reviews.slice(0, MAX_REVIEWS).map((r) => ({
@@ -123,7 +125,6 @@ export function GamePageJsonLd({
             bestRating: RATING_MAX,
             worstRating: RATING_MIN,
           },
-          itemReviewed: { "@id": appId },
         }))
       : [];
 
