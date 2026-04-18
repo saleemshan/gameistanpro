@@ -40,6 +40,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/favicon.ico",
+        destination: "/images/brand/gameistan-pro-logo.png",
+        permanent: false,
+      },
+      {
         source: "/category/tools",
         destination: "/apps?category=tools",
         permanent: false,
