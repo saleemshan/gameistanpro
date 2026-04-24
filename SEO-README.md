@@ -47,6 +47,10 @@ This project uses the **Next.js App Router** metadata API, **dynamic** `app/site
 - [Google Rich Results Test](https://search.google.com/test/rich-results) — paste a live URL to validate JSON-LD.
 - [PageSpeed Insights](https://pagespeed.web.dev/) — Core Web Vitals and mobile checks.
 
+## Middleware
+
+- **[`middleware.ts`](middleware.ts)** — 301-redirects stale `/?page=N` URLs to `/`. The homepage no longer uses pagination (the old `HomeFeaturedGamesSection` component is unused), but Google still crawls cached `/?page=*` URLs. Without the redirect these appeared as "Alternate page with proper canonical tag" in Google Search Console.
+
 ## Robots
 
 - **[`app/robots.ts`](app/robots.ts)** — `Allow: /`, `Disallow: /api/`, `/search`; sitemap URL derived from `getSiteUrl()`.
