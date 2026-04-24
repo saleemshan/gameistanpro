@@ -37,7 +37,7 @@ describe("averageReviewRating", () => {
 describe("parseReviewSubmissionBody", () => {
   it("rejects comment shorter than 20 chars", () => {
     const r = parseReviewSubmissionBody({
-      gameSlug: "pk8-game-apk-pakistan",
+      gameSlug: "pk8-game",
       name: "Test",
       rating: 5,
       comment: "too short",
@@ -47,7 +47,7 @@ describe("parseReviewSubmissionBody", () => {
 
   it("accepts valid payload", () => {
     const r = parseReviewSubmissionBody({
-      gameSlug: "pk8-game-apk-pakistan",
+      gameSlug: "pk8-game",
       name: "Test U.",
       city: "Lahore",
       rating: 4,
