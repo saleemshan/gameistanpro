@@ -95,6 +95,10 @@ export const App = defineDocumentType(() => ({
     views: { type: "number", default: 0 },
     faqs: { type: "list", of: FaqNested, default: [] },
     installSteps: { type: "list", of: InstallStepNested, default: [] },
+    primaryKeyword: { type: "string", required: false },
+    secondaryKeywords: { type: "list", of: { type: "string" }, default: [] },
+    semanticKeywords: { type: "list", of: { type: "string" }, default: [] },
+    canonical: { type: "string", required: false },
   },
   computedFields: {
     url: { type: "string", resolve: (doc) => `/apps/${doc.slug}` },
@@ -146,6 +150,10 @@ export const Game = defineDocumentType(() => ({
       default: [],
     },
     versionHistory: { type: "list", of: VersionHistoryNested, default: [] },
+    primaryKeyword: { type: "string", required: false },
+    secondaryKeywords: { type: "list", of: { type: "string" }, default: [] },
+    semanticKeywords: { type: "list", of: { type: "string" }, default: [] },
+    canonical: { type: "string", required: false },
   },
   computedFields: {
     url: { type: "string", resolve: (doc) => `/${doc.slug}` },
@@ -173,6 +181,10 @@ export const Guide = defineDocumentType(() => ({
     tags: { type: "list", of: { type: "string" }, default: [] },
     featured: { type: "boolean", default: false },
     faqs: { type: "list", of: FaqNested, default: [] },
+    primaryKeyword: { type: "string", required: false },
+    secondaryKeywords: { type: "list", of: { type: "string" }, default: [] },
+    semanticKeywords: { type: "list", of: { type: "string" }, default: [] },
+    canonical: { type: "string", required: false },
   },
   computedFields: {
     url: { type: "string", resolve: (doc) => `/guides/${doc.slug}` },
