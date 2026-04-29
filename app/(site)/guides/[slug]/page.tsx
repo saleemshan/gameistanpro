@@ -13,6 +13,7 @@ import {
 } from "@/components/guides/GuideTableOfContents";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { GuideBlogPostingJsonLd } from "@/components/seo/GuideBlogPostingJsonLd";
+import { BlogSchema } from "@/components/seo/BlogSchema";
 import { getAllGuides, getGuideBySlug, getRelatedGuides } from "@/lib/content";
 import { extractTocFromMarkdown } from "@/lib/guide-toc";
 import { getSiteReviews } from "@/lib/reviews";
@@ -43,7 +44,7 @@ export async function generateMetadata({
     title,
     description: guide.description,
     authors: [{ name: guide.author, url: absoluteUrl("/") }],
-    alternates: { canonical: absoluteUrl(path) },
+    alternates: { canonical: guide.canonical || absoluteUrl(path) },
     openGraph: {
       title,
       description: guide.description,
@@ -100,6 +101,16 @@ export default async function GuideDetailPage({
         ]}
       />
       <GuideBlogPostingJsonLd guide={guide} />
+      <BlogSchema
+        title={guide.title}
+        description={guide.description}
+        url={guide.canonical || absoluteUrl(guide.url)}
+        image={absoluteUrl(guide.coverImage)}
+        datePublished={guide.publishedAt}
+        dateModified={guide.updatedAt}
+        authorName={guide.author}
+        faqs={guide.faqs}
+      />
       <GuideTocProvider
         items={tocFromMdx.map((t) => ({
           id: t.id,

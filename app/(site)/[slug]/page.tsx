@@ -22,6 +22,7 @@ import { GameProsConsTable } from "@/components/game/GameProsConsTable";
 import { GameSystemRequirementsTable } from "@/components/game/GameSystemRequirementsTable";
 import { GameVersionHistoryTable } from "@/components/game/GameVersionHistoryTable";
 import { GamePageJsonLd } from "@/components/seo/GamePageJsonLd";
+import { BlogSchema } from "@/components/seo/BlogSchema";
 import {
   contentGameToEarningGame,
   getMostViewed,
@@ -70,7 +71,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: absoluteUrl(path) },
+    alternates: { canonical: game.canonical || absoluteUrl(path) },
     openGraph: {
       title,
       description,
@@ -168,6 +169,18 @@ export default async function RootGameDetailPage({
         reviews={reviews}
         installSteps={extras.installSteps}
         downloadUrl={downloadHref}
+      />
+      <BlogSchema
+        title={game.title}
+        description={game.description}
+        url={game.canonical || absoluteUrl(game.url)}
+        image={absoluteUrl(game.coverImage)}
+        datePublished={game.publishedAt}
+        dateModified={game.updatedAt}
+        authorName="Gameistan"
+        faqs={game.faqs}
+        isHowTo={game.installSteps && game.installSteps.length > 0}
+        installSteps={game.installSteps}
       />
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
