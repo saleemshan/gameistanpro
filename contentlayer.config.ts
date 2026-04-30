@@ -99,6 +99,14 @@ export const App = defineDocumentType(() => ({
     secondaryKeywords: { type: "list", of: { type: "string" }, default: [] },
     semanticKeywords: { type: "list", of: { type: "string" }, default: [] },
     canonical: { type: "string", required: false },
+    // Metadata fields to silence warnings
+    author: { type: "string", required: false },
+    faqSchema: { type: "boolean", required: false },
+    howToSchema: { type: "boolean", required: false },
+    ogImage: { type: "string", required: false },
+    readingTime: { type: "string", required: false },
+    date: { type: "string", required: false },
+    updated: { type: "string", required: false },
   },
   computedFields: {
     url: { type: "string", resolve: (doc) => `/apps/${doc.slug}` },
@@ -154,6 +162,14 @@ export const Game = defineDocumentType(() => ({
     secondaryKeywords: { type: "list", of: { type: "string" }, default: [] },
     semanticKeywords: { type: "list", of: { type: "string" }, default: [] },
     canonical: { type: "string", required: false },
+    // Metadata fields to silence warnings
+    author: { type: "string", required: false },
+    faqSchema: { type: "boolean", required: false },
+    howToSchema: { type: "boolean", required: false },
+    ogImage: { type: "string", required: false },
+    readingTime: { type: "string", required: false },
+    date: { type: "string", required: false },
+    updated: { type: "string", required: false },
   },
   computedFields: {
     url: { type: "string", resolve: (doc) => `/${doc.slug}` },
@@ -185,6 +201,13 @@ export const Guide = defineDocumentType(() => ({
     secondaryKeywords: { type: "list", of: { type: "string" }, default: [] },
     semanticKeywords: { type: "list", of: { type: "string" }, default: [] },
     canonical: { type: "string", required: false },
+    // Metadata fields to silence warnings
+    date: { type: "string", required: false },
+    updated: { type: "string", required: false },
+    faqSchema: { type: "boolean", required: false },
+    howToSchema: { type: "boolean", required: false },
+    ogImage: { type: "string", required: false },
+    shortDescription: { type: "string", required: false },
   },
   computedFields: {
     url: { type: "string", resolve: (doc) => `/guides/${doc.slug}` },
