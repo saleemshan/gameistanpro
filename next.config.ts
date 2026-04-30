@@ -112,6 +112,15 @@ const nextConfig: NextConfig = {
       { source: "/pk8-game-apk-pakistan", destination: "/pk8-game", permanent: true },
       { source: "/rs786-game-apk-download", destination: "/rs786-game", permanent: true },
       { source: "/td777-game-pakistan-2025", destination: "/td777-game", permanent: true },
+      // SEO FIX: Specific redirects for 404s reported in Search Console
+      { source: "/games/betaa-game-apk-pakistan", destination: "/betaa-game", permanent: true },
+      { source: "/games/jj-77-game-apk-pakistan", destination: "/jj77-game", permanent: true },
+      { source: "/games/10win-game-apk-pakistan", destination: "/10win-game", permanent: true },
+      { source: "/games/q5bet-game-apk-pakistan", destination: "/q5bet-game", permanent: true },
+      { source: "/betaa-game-apk-pakistan", destination: "/betaa-game", permanent: true },
+      { source: "/jj-77-game-apk-pakistan", destination: "/jj77-game", permanent: true },
+      { source: "/10win-game-apk-pakistan", destination: "/10win-game", permanent: true },
+      { source: "/q5bet-game-apk-pakistan", destination: "/q5bet-game", permanent: true },
       {
         source: "/games/:slug",
         destination: "/:slug",
