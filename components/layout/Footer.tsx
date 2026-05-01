@@ -51,7 +51,7 @@ export function Footer() {
             </p>
           </div>
           {footerLinks.map((section) => (
-            <div key={section.title}>
+            <nav key={section.title} aria-label={`${section.title} navigation`}>
               <h3 className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 {section.title}
               </h3>
@@ -67,7 +67,7 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </nav>
           ))}
         </div>
         <Separator className="my-8" />

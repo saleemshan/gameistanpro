@@ -18,9 +18,12 @@ import { siteConfig } from "@/lib/seo";
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/games", label: "Games" },
   { href: "/category/casino-games", label: "Casino Games" },
   { href: "/category/earning-apps", label: "Earning Apps" },
+  { href: "/guides", label: "Guides" },
   { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Header() {
@@ -47,7 +50,7 @@ export function Header() {
           <span className="sr-only">{siteConfig.name}</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Main navigation" className="hidden items-center gap-1 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}

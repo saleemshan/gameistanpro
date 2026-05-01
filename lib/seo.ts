@@ -8,9 +8,9 @@ export const siteConfig = {
   shortName: "Gameistan Pro",
   /** Full `<title>` / OG default — includes brand once. Child routes use `title.absolute` or template segment without brand. */
   defaultTitle:
-    "Best Real Earning Games in Pakistan 2026 — APK Downloads & Reviews | Gameistan Pro",
+    "Gameistan Pro | Best Earning Games & APK Downloads Pakistan 2026",
   description:
-    "Independent guides to real-money earning games in Pakistan—color prediction & casino APKs, JazzCash / EasyPaisa context, safe installs, and PKR-focused reviews.",
+    "Gameistan Pro is Pakistan's #1 source for earning game APK downloads, reviews & guides — casino, color prediction & real-money apps with JazzCash & EasyPaisa support.",
   locale: "en_PK",
 } as const;
 

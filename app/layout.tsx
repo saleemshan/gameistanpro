@@ -84,10 +84,22 @@ export const metadata: Metadata = {
 };
 
 // SEO: One JSON-LD root with `@graph` — a bare `[org, website]` array is not valid JSON-LD.
+// Includes SiteNavigationElement for Google Sitelinks eligibility.
 function rootSiteGraphJsonLd() {
   const origin = getSiteUrl().replace(/\/$/, "");
   const orgId = getOrganizationSchemaId();
   const websiteId = getWebsiteSchemaId();
+
+  // Primary navigation items — Google uses these to generate sitelinks.
+  const siteNavItems = [
+    { name: "Casino Games", url: `${origin}/category/casino-games` },
+    { name: "Earning Apps", url: `${origin}/category/earning-apps` },
+    { name: "Games", url: `${origin}/games` },
+    { name: "Guides", url: `${origin}/guides` },
+    { name: "About Us", url: `${origin}/about` },
+    { name: "Contact", url: `${origin}/contact` },
+  ];
+
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -97,6 +109,7 @@ function rootSiteGraphJsonLd() {
         name: siteConfig.name,
         url: origin,
         logo: absoluteUrl(SITE_LOGO.src),
+        description: siteConfig.description,
         ...(getOrgSameAs().length ? { sameAs: getOrgSameAs() } : {}),
       },
       {
@@ -104,13 +117,23 @@ function rootSiteGraphJsonLd() {
         "@id": websiteId,
         name: siteConfig.name,
         url: origin,
+        description: siteConfig.description,
         publisher: { "@id": orgId },
         potentialAction: {
           "@type": "SearchAction",
-          target: `${origin}/search?q={search_term_string}`,
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${origin}/search?q={search_term_string}`,
+          },
           "query-input": "required name=search_term_string",
         },
       },
+      // SiteNavigationElement — signals primary site sections for Google Sitelinks.
+      ...siteNavItems.map((item) => ({
+        "@type": "SiteNavigationElement",
+        name: item.name,
+        url: item.url,
+      })),
     ],
   };
 }
