@@ -1,15 +1,12 @@
-"use client";
-
-import { useMDXComponent } from "next-contentlayer2/hooks";
+import { MDXRemote } from "next-mdx-remote/rsc";
 
 import { mdxDetailComponents } from "@/components/mdx/mdx-detail-components";
 import { detailMdxClassName } from "@/lib/mdx-prose";
 
-export function AppDescription({ code }: { code: string }) {
-  const MDXContent = useMDXComponent(code);
+export function AppDescription({ raw }: { raw: string }) {
   return (
     <div className={detailMdxClassName}>
-      <MDXContent components={mdxDetailComponents} />
+      <MDXRemote source={raw} components={mdxDetailComponents} />
     </div>
   );
 }

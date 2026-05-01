@@ -183,7 +183,7 @@ export default async function RootGameDetailPage({
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_300px]">
           <div className="space-y-10">
             <article id="review" className="min-w-0 scroll-mt-28">
-              <AppDescription code={game.body.code} />
+              <AppDescription raw={game.body.raw} />
             </article>
 
             <section id="reviews" className="scroll-mt-28 space-y-8">
