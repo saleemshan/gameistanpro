@@ -99,7 +99,7 @@ export function getWebsiteSchemaId(): string {
 
 export function getContactEmail(): string {
   return (
-    process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "contact@gameistan.com.pk"
+    process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "contact@gameistanpro.com.pk"
   );
 }
 

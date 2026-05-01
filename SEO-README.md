@@ -7,7 +7,7 @@ This project uses the **Next.js App Router** metadata API, **dynamic** `app/site
 | Variable | Purpose |
 |----------|---------|
 | `NEXT_PUBLIC_SITE_URL` | Canonical origin for the live site (no trailing slash). **Set in production** so sitemaps, `metadataBase`, and JSON-LD URLs are correct. On Vercel, `VERCEL_URL` is used as a fallback when this is unset. |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | Shown in the footer, privacy policy, disclaimer, and terms (DMCA line). Falls back to `contact@gameistan.com.pk`. |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Shown in the footer, privacy policy, disclaimer, and terms (DMCA line). Falls back to `contact@gameistanpro.com.pk`. |
 | `NEXT_PUBLIC_ORG_SAME_AS` | Comma-separated profile URLs for Organization `sameAs` in root JSON-LD (e.g. social profiles). |
 
 ## Global SEO entry points

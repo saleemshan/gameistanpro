@@ -165,11 +165,27 @@ export function GamePageJsonLd({
   if (published) mobileApp.datePublished = published;
   if (modified) mobileApp.dateModified = modified;
   if (keywords) mobileApp.keywords = keywords;
+  // GSC FIX: Google requires `aggregateRating` whenever `review` is present.
+  // Use listing rating/votes when available; fall back to computing from reviews.
   if (showAggregate) {
     mobileApp.aggregateRating = {
       "@type": "AggregateRating",
       ratingValue: Math.round(listingRating * 10) / 10,
       ratingCount: Math.max(1, voteInt),
+      bestRating: RATING_MAX,
+      worstRating: RATING_MIN,
+    };
+  } else if (reviewNodes.length > 0) {
+    // Compute aggregateRating from the review nodes themselves.
+    const reviewRatings = reviewNodes.map(
+      (r) => (r.reviewRating as { ratingValue: number }).ratingValue,
+    );
+    const avgRating =
+      reviewRatings.reduce((sum, v) => sum + v, 0) / reviewRatings.length;
+    mobileApp.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: Math.round(avgRating * 10) / 10,
+      ratingCount: reviewRatings.length,
       bestRating: RATING_MAX,
       worstRating: RATING_MIN,
     };
