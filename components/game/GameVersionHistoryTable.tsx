@@ -42,7 +42,7 @@ export function GameVersionHistoryTable({
           <tbody>
             {rows.map((r, i) => (
               <tr key={`${r.version}-${i}`} className="border-b border-border last:border-0">
-                <td className="whitespace-nowrap px-4 py-3 font-mono text-primary">
+                <td className="whitespace-nowrap px-4 py-3 font-mono text-purple-700 dark:text-purple-300">
                   {r.version}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">

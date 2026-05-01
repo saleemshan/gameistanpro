@@ -69,7 +69,7 @@ export function GameHero({ game }: GameHeroProps) {
 
           {game.version && (
             <p className="text-sm text-muted-foreground">
-              Version: <span className="font-mono text-primary">{game.version}</span>
+              Version: <span className="font-mono text-purple-700 dark:text-purple-300">{game.version}</span>
             </p>
           )}
 

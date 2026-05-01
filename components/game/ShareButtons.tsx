@@ -10,19 +10,19 @@ interface ShareButtonsProps {
 const platforms = [
   {
     name: "WhatsApp",
-    color: "bg-green-600 hover:bg-green-700",
+    color: "bg-[#15803d] hover:bg-[#166534]", // green-700 -> green-800
     getUrl: (url: string, title: string) =>
       `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`,
   },
   {
     name: "Telegram",
-    color: "bg-blue-500 hover:bg-blue-600",
+    color: "bg-[#2563eb] hover:bg-[#1d4ed8]", // blue-600 -> blue-700
     getUrl: (url: string, title: string) =>
       `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
   },
   {
     name: "Facebook",
-    color: "bg-blue-700 hover:bg-blue-800",
+    color: "bg-[#1d4ed8] hover:bg-[#1e3a8a]", // blue-700 -> blue-900
     getUrl: (url: string) =>
       `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
   },

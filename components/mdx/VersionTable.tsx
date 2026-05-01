@@ -27,7 +27,7 @@ export function VersionTable({ versions = [] }: VersionTableProps) {
                 i % 2 === 0 ? "bg-transparent" : "bg-muted/20"
               }`}
             >
-              <td className="px-4 py-3 font-mono text-primary">{v.version}</td>
+              <td className="px-4 py-3 font-mono text-purple-700 dark:text-purple-300">{v.version}</td>
               <td className="px-4 py-3 text-muted-foreground">{v.date}</td>
               <td className="px-4 py-3 text-muted-foreground">{v.changes}</td>
             </tr>

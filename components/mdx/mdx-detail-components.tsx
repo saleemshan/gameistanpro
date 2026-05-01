@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import Image from "next/image";
 
 function Table(
   props: ComponentPropsWithoutRef<"table"> & { children?: ReactNode },
@@ -22,4 +23,14 @@ function Table(
 
 export const mdxDetailComponents = {
   table: Table,
+  img: (props: any) => (
+    <Image
+      src={props.src}
+      alt={props.alt || ""}
+      width={1200}
+      height={630}
+      style={{ width: "100%", height: "auto" }}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 50vw"
+    />
+  ),
 } satisfies MDXComponents;
