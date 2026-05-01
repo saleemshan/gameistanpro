@@ -42,10 +42,11 @@ export function Header() {
             width={36}
             height={36}
             className="h-9 w-9 shrink-0 object-contain"
+            quality={50}
             priority
           />
           <span>
-            Gameistan<span className="text-primary"> Pro</span>
+            Gameistan<span className="text-purple-700 dark:text-purple-400"> Pro</span>
           </span>
           <span className="sr-only">{siteConfig.name}</span>
         </Link>
@@ -82,7 +83,7 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-72 border-border bg-card">
               <SheetTitle className="flex items-center gap-2 p-4 font-heading text-lg">
-                <Gamepad2 className="h-5 w-5 text-primary" />
+                <Gamepad2 className="h-5 w-5 text-purple-700 dark:text-purple-400" />
                 Menu
               </SheetTitle>
               <nav className="flex flex-col gap-1 px-4">

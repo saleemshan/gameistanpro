@@ -31,6 +31,7 @@ export function SiteLogoLink({
         height={SITE_LOGO.height}
         className={cn(h, "w-auto bg-transparent object-contain")}
         priority={priority}
+        quality={50}
         sizes={size === "sm" ? "120px" : "150px"}
       />
     </Link>

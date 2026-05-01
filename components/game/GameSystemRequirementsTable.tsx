@@ -14,7 +14,7 @@ export function GameSystemRequirementsTable({
   return (
     <section id="requirements" className="scroll-mt-28 space-y-4">
       <h2 className="flex items-center gap-2 font-heading text-2xl font-bold text-foreground">
-        <Cpu className="size-6 text-primary" />
+        <Cpu className="size-6 text-purple-700 dark:text-purple-400" />
         System requirements — {productName}
       </h2>
       <div className="mdx-table-wrap not-prose overflow-x-auto rounded-xl border border-border">

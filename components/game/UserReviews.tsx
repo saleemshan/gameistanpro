@@ -33,7 +33,7 @@ export function UserReviews({ reviews, gameName, heading }: UserReviewsProps) {
 
       <div className="mb-6 flex flex-col gap-6 sm:flex-row sm:items-center">
         <div className="text-center">
-          <div className="text-5xl font-bold text-primary">{avgRating.toFixed(1)}</div>
+          <div className="text-5xl font-bold text-purple-700 dark:text-purple-400">{avgRating.toFixed(1)}</div>
           <div className="mt-1 flex justify-center gap-0.5">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
@@ -63,7 +63,7 @@ export function UserReviews({ reviews, gameName, heading }: UserReviewsProps) {
           <div key={i} className="rounded-xl border border-border bg-background p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-700/10 dark:bg-purple-400/10 text-xs font-bold text-purple-700 dark:text-purple-400">
                   {review.name.charAt(0)}
                 </div>
                 <div>

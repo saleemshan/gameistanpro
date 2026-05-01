@@ -21,7 +21,7 @@ export function FAQAccordion({ items = [] }: FAQAccordionProps) {
     <Accordion multiple className="my-6">
       {items.map((item, i) => (
         <AccordionItem key={i} value={`faq-${i}`} className="border-border">
-          <AccordionTrigger className="text-left font-heading text-base hover:text-primary">
+          <AccordionTrigger className="text-left font-heading text-base hover:text-purple-700 dark:text-purple-400">
             {item.question}
           </AccordionTrigger>
           <AccordionContent className="text-muted-foreground leading-relaxed">

@@ -160,13 +160,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* SEO FIX: Third-party cover-image origin (MDX) — faster TLS + DNS for LCP. */}
-        <link
-          rel="preconnect"
-          href="https://gameistan.com.pk"
-          crossOrigin="anonymous"
-        />
-        <link rel="dns-prefetch" href="https://gameistan.com.pk" />
+        {/* SEO FIX: Removed unused preconnect to gameistan.com.pk */}
       </head>
       <body className="flex min-h-screen flex-col bg-background font-sans text-foreground antialiased">
         <JsonLd data={rootSiteGraphJsonLd()} />

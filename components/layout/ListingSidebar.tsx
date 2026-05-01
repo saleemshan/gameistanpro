@@ -16,7 +16,7 @@ function MiniList({
       <ul className="space-y-3 text-sm">
         {items.map((i) => (
           <li key={i.href}>
-            <Link href={i.href} className="font-medium text-foreground hover:text-primary">
+            <Link href={i.href} className="font-medium text-foreground hover:text-purple-700 dark:text-purple-400">
               {i.title}
             </Link>
             <p className="text-xs text-muted-foreground">{i.meta}</p>
@@ -52,7 +52,7 @@ export function ListingSidebar() {
             <Link
               key={t}
               href={`/tags/${slugifyTag(t)}`}
-              className="rounded-full border border-border px-2 py-1 text-xs text-muted-foreground hover:border-primary/35"
+              className="rounded-full border border-border px-2 py-1 text-xs text-muted-foreground hover:border-purple-700 dark:border-purple-400/35"
             >
               {t}
             </Link>

@@ -16,7 +16,7 @@ export function GameCard({ game, compact = false }: GameCardProps) {
   if (compact) {
     return (
       <Link href={`/${game.slug}`}>
-        <Card className="group relative overflow-hidden border-border bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
+        <Card className="group relative overflow-hidden border-border bg-card transition-all duration-300 hover:border-purple-700 dark:border-purple-400/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5">
           <CardContent className="p-4">
             <div className="flex gap-3">
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-muted">
@@ -36,7 +36,7 @@ export function GameCard({ game, compact = false }: GameCardProps) {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="truncate font-heading text-sm font-semibold group-hover:text-primary transition-colors">
+                  <h3 className="truncate font-heading text-sm font-semibold group-hover:text-purple-700 dark:text-purple-400 transition-colors">
                     {game.title}
                   </h3>
                   <VersionBadge
@@ -60,7 +60,7 @@ export function GameCard({ game, compact = false }: GameCardProps) {
   }
 
   return (
-    <Card className="group relative overflow-hidden border-border bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
+    <Card className="group relative overflow-hidden border-border bg-card transition-all duration-300 hover:border-purple-700 dark:border-purple-400/40 hover:shadow-lg hover:shadow-primary/5">
       <CardContent className="p-4">
         <Link href={`/${game.slug}`} className="flex gap-3">
           <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-muted">
@@ -80,7 +80,7 @@ export function GameCard({ game, compact = false }: GameCardProps) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="truncate font-heading text-sm font-semibold group-hover:text-primary transition-colors">
+              <h3 className="truncate font-heading text-sm font-semibold group-hover:text-purple-700 dark:text-purple-400 transition-colors">
                 {game.title}
               </h3>
               <VersionBadge
@@ -116,7 +116,7 @@ export function GameCard({ game, compact = false }: GameCardProps) {
           )}
           <Link
             href={`/${game.slug}`}
-            className="rounded-lg border border-border px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+            className="rounded-lg border border-border px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-purple-700 dark:border-purple-400/40 transition-colors"
           >
             Details
           </Link>

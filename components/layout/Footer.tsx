@@ -41,9 +41,9 @@ export function Footer() {
               href="/"
               className="flex items-center gap-2 font-heading text-lg font-bold"
             >
-              <Gamepad2 className="h-5 w-5 text-primary" />
+              <Gamepad2 className="h-5 w-5 text-purple-700 dark:text-purple-400" />
               <span>
-                Gameistan<span className="text-primary"> Pro</span>
+                Gameistan<span className="text-purple-700 dark:text-purple-400"> Pro</span>
               </span>
             </Link>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">

@@ -144,8 +144,8 @@ function TocList({
                 item.level === 3 && "text-muted-foreground",
                 item.level === 2 && "font-semibold text-foreground",
                 isActive
-                  ? "bg-primary/9 text-primary border-primary border-l-[3px] font-semibold shadow-sm"
-                  : "text-foreground/90 border-l-[3px] border-transparent hover:bg-muted/50 hover:text-primary",
+                  ? "bg-primary/9 text-purple-700 dark:text-purple-400 border-purple-700 dark:border-purple-400 border-l-[3px] font-semibold shadow-sm"
+                  : "text-foreground/90 border-l-[3px] border-transparent hover:bg-muted/50 hover:text-purple-700 dark:text-purple-400",
               )}
             >
               {item.text}

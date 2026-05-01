@@ -22,7 +22,7 @@ export function GameProsConsTable({
             <tr>
               <th className="border-b border-border bg-muted/50 px-4 py-3 font-heading text-foreground">
                 <span className="inline-flex items-center gap-1.5">
-                  <ThumbsUp className="size-4 text-primary" /> Pros
+                  <ThumbsUp className="size-4 text-purple-700 dark:text-purple-400" /> Pros
                 </span>
               </th>
               <th className="border-b border-border bg-muted/50 px-4 py-3 font-heading text-foreground">

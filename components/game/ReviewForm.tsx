@@ -115,7 +115,7 @@ export function ReviewForm({
                 className={cn(
                   "rounded-md border px-2 py-1 text-sm transition-colors",
                   rating === n
-                    ? "border-primary bg-primary/10 text-primary"
+                    ? "border-purple-700 dark:border-purple-400 bg-purple-700/10 dark:bg-purple-400/10 text-purple-700 dark:text-purple-400"
                     : "border-border bg-background text-muted-foreground hover:bg-muted",
                 )}
                 onClick={() => setRating(n)}
@@ -156,7 +156,7 @@ export function ReviewForm({
         </div>
 
         <div aria-live="polite" className="min-h-5 text-sm text-muted-foreground">
-          {status === "success" ? <span className="text-primary">{message}</span> : null}
+          {status === "success" ? <span className="text-purple-700 dark:text-purple-400">{message}</span> : null}
           {status === "error" ? <span className="text-destructive">{message}</span> : null}
         </div>
 

@@ -35,7 +35,7 @@ export function InstallSteps({
     <section id="how-to-download" className="scroll-mt-24 space-y-4">
       {includeHowToJsonLd ? <JsonLd data={howTo} /> : null}
       <h2 className="flex items-center gap-2 font-heading text-xl font-bold text-foreground">
-        <ListOrdered className="size-5 text-primary" />
+        <ListOrdered className="size-5 text-purple-700 dark:text-purple-400" />
         {productTitle?.trim()
           ? `How to download & install ${productTitle.trim()}`
           : "How to download & install"}
