@@ -25,17 +25,25 @@ function pick<T>(slug: string, salt: string, arr: readonly T[]): T {
   return arr[hashString(slug + salt) % arr.length];
 }
 
+/** `major.minor.patch` only — anything else (e.g. "varies by mirror") must not reach semver math. */
+function looksLikeSemverVersion(v: string): boolean {
+  return /^\s*v?\d+\.\d+\.\d+\s*$/i.test(v.trim());
+}
+
 /** Treat as placeholder so we substitute a realistic build string for crawlers. */
 export function isPlaceholderVersion(v: string | undefined): boolean {
   if (!v?.trim()) return true;
   const n = v.trim().toLowerCase();
-  return (
+  if (
     n === "v0.0.0" ||
     n === "0.0.0" ||
     n === "v0.0" ||
     n === "v0" ||
     /^v?0\.0\.\d+$/.test(n)
-  );
+  ) {
+    return true;
+  }
+  return !looksLikeSemverVersion(v);
 }
 
 export function deriveDisplayVersion(slug: string, current: string | undefined): string {
@@ -121,8 +129,24 @@ function addMonths(d: Date, delta: number): Date {
 }
 
 function parseMb(displaySize: string): number {
-  const n = parseInt(displaySize.replace(/[^\d]/g, ""), 10);
-  return Number.isFinite(n) && n > 0 ? n : 42;
+  const range = displaySize.match(/(\d+)\s*[–-]\s*(\d+)/);
+  if (range) {
+    const lo = Number(range[1]);
+    const hi = Number(range[2]);
+    if (Number.isFinite(lo) && Number.isFinite(hi) && lo > 0 && hi > 0 && hi < 2048) {
+      return Math.round((lo + hi) / 2);
+    }
+  }
+  const withUnit = displaySize.match(/(\d+)\s*(MB|mb|GB|gb)\b/i);
+  if (withUnit) {
+    let v = Number(withUnit[1]);
+    if (!Number.isFinite(v) || v <= 0) return 42;
+    if (/gb/i.test(withUnit[2])) v *= 1024;
+    if (v > 0 && v < 2048) return Math.round(v);
+  }
+  const digits = displaySize.replace(/\D/g, "");
+  const n = digits ? parseInt(digits.slice(0, 3), 10) : NaN;
+  return Number.isFinite(n) && n > 0 && n < 500 ? n : 42;
 }
 
 function buildVersionHistory(
@@ -132,8 +156,11 @@ function buildVersionHistory(
   updatedAt: string | Date,
 ): VersionHistoryRow[] {
   const end = new Date(updatedAt);
-  const raw = displayVersion.replace(/^v/i, "");
-  const [maj, min, pat] = raw.split(".").map((x) => parseInt(x, 10) || 0);
+  const raw = displayVersion.replace(/^v/i, "").trim();
+  const parts = raw.split(".").map((x) => parseInt(x, 10));
+  const maj = Number.isFinite(parts[0]) && parts[0]! > 0 ? parts[0]! : 1;
+  const min = Number.isFinite(parts[1]) ? Math.max(0, parts[1]!) : 0;
+  const pat = Number.isFinite(parts[2]) ? Math.max(0, parts[2]!) : 0;
   const fmt = (a: number, b: number, c: number) =>
     `v${Math.max(1, a)}.${Math.max(0, b)}.${Math.max(0, c)}`;
 

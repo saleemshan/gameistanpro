@@ -102,8 +102,9 @@ export default async function GuidesPage({
     "Editorial articles covering APK safety, fake apps, and wallet hygiene for Pakistani Android users.";
 
   return (
-    <div className="space-y-8">
-      <GuidesCollectionJsonLd
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="space-y-8">
+        <GuidesCollectionJsonLd
         guides={list}
         canonicalPath={path}
         name={listTitle}
@@ -152,6 +153,7 @@ export default async function GuidesPage({
             </div>
           </Link>
         ))}
+      </div>
       </div>
     </div>
   );

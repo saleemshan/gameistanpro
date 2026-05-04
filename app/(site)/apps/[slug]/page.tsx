@@ -137,7 +137,7 @@ export default async function AppDetailPage({
           <p className="text-sm text-muted-foreground">
             Detailed write-up and tips from our listing—use the outline to jump around.
           </p>
-          <AppDescription raw={app.body.raw} />
+          <AppDescription raw={app.body.raw} contentFileId={app._id} />
         </section>
         {app.screenshots.length > 0 ? (
           <section id="screenshots" className="scroll-mt-28 space-y-3">

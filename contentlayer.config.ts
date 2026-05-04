@@ -9,7 +9,6 @@ import remarkGfm from "remark-gfm";
 import { remarkStripEmbeddedFaq } from "./lib/remark-strip-embedded-faq";
 import { remarkStripEmbeddedProsCons } from "./lib/remark-strip-embedded-pros-cons";
 import { remarkStripGuideBoilerplate } from "./lib/remark-strip-guide-boilerplate";
-import { remarkStripManualToc } from "./lib/remark-strip-manual-toc";
 
 const FaqNested = defineNestedType(() => ({
   name: "FaqItem",
@@ -230,7 +229,6 @@ export default makeSource({
     // GFM pipe tables (Pros | Cons), strikethrough, autolinks, etc.
     remarkPlugins: [
       remarkGfm,
-      remarkStripManualToc,
       remarkStripEmbeddedProsCons,
       remarkStripEmbeddedFaq,
       remarkStripGuideBoilerplate,
